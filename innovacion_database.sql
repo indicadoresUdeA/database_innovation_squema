@@ -5,25 +5,33 @@ CREATE DATABASE innovacion;
 \c innovacion;
 
 -- Enumerados para tipos específicos
-CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Otro');
-CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Prefiero no decirlo');
+CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Intersexual');
+CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Género fluido', 'Agénero', 'Prefiero no decirlo', 'Otro');
+CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', , 'Pasaporte (P)', , 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)');
+
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural', 'Periurbana');
 CREATE TYPE SECTOR_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
-CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
+CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura', 'Institución educativa');
 CREATE TYPE ROL_ENUM AS ENUM ('Empleado', 'Gerente', 'Socio', 'Fundador', 'Inversionista');
+CREATE TYPE MAGNITUD_EMPRESA_ENUM AS ENUM ('Grande', 'Mediana', 'Pequeña');
+
 CREATE TYPE TIPO_VINCULO_UNIDAD_IE_ENUM AS ENUM ('Facultad', 'Instituto', 'Escuela', 'Centro de Investigación');
-CREATE TYPE TIPO_UBICACION_UNIDAD_IE_ENUM AS ENUM ('Urbana', 'Rural');
-CREATE TYPE NIVEL_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Pregrado', 'Maestría', 'Doctorado');
+CREATE TYPE TIPO_UBICACION_UNIDAD_IE_ENUM AS ENUM ('Campus', 'Sede', 'Sede única');
+CREATE TYPE NIVEL_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Técnica profesional', 'Tecnológico', 'Profesional', 'Especialización', 'Maestría', 'Doctorado');
 CREATE TYPE AREA_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Ingeniería', 'Ciencias Sociales', 'Ciencias Naturales', 'Artes', 'Humanidades');
 CREATE TYPE ESTADO_ACADEMICO_ENUM AS ENUM ('En curso', 'Graduado', 'Retirado');
+
+CREATE TYPE MODALIDAD_ACTIVIDAD_ENUM AS ENUM ('Virtual', 'Presencial', 'Híbrido');
+CREATE TYPE TIPO_ACTIVIDAD_ENUM AS ENUM ('Evento', 'Actividad', 'Curso', 'Convocatoria');
+
 
 -- Tabla persona
 CREATE TABLE persona (
     id_persona                   SERIAL PRIMARY KEY,
     nombres_persona              VARCHAR(100) NOT NULL,
     apellidos_persona            VARCHAR(100) NOT NULL,
-    tipo_documento_persona       VARCHAR(20) NOT NULL,
+    tipo_documento_persona       TIPO_DOCUMENTO_PERSONA_ENUM NOT NULL,
     numero_documento_persona     VARCHAR(50) UNIQUE NOT NULL,
     sexo_biologico               SEXO_ENUM NOT NULL,
     genero                       GENERO_ENUM NOT NULL,
@@ -45,7 +53,7 @@ CREATE TABLE empresa (
     zona_empresa                      ZONA_EMPRESA_ENUM NOT NULL,
     sector_empresa                    SECTOR_EMPRESA_ENUM NOT NULL,
     tipo_empresa                      TIPO_EMPRESA_ENUM NOT NULL,
-    magnitud_empresa                  VARCHAR(100),  
+    magnitud_empresa                  MAGNITUD_EMPRESA_ENUM,  
     naturaleza_juridica               VARCHAR(100),
     telefono_empresa                  VARCHAR(20),
     correo_empresa                    VARCHAR(100) UNIQUE NOT NULL,
