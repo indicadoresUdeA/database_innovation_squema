@@ -8,7 +8,7 @@ CREATE DATABASE innovacion;
 -- Enumerados para tipos específicos
 CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Intersexual');
 CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Género fluido', 'Agénero', 'Prefiero no decirlo', 'Otro');
-CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', , 'Pasaporte (P)', , 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)');
+CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', 'Pasaporte (P)', 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)');
 CREATE TYPE ESTRATO_SOCIOECONOMICO_ENUM AS ENUM ('Estrato 1 (Bajo-bajo)', 'Estrato 2 (Bajo)', 'Estrato 3 (Medio-bajo)', 'Estrato 4 (Medio)', 'Estrato 5 (Medio-alto)', 'Estrato 6 (Alto)')
 
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
@@ -38,6 +38,9 @@ CREATE TYPE ESTADO_FINANCIACION_ENUM AS ENUM ('Aprobado', 'Pendiente', 'Rechazad
 
 CREATE TYPE MODALIDAD_ACTIVIDAD_ENUM AS ENUM ('Virtual', 'Presencial', 'Híbrido');
 CREATE TYPE TIPO_ACTIVIDAD_ENUM AS ENUM ('Evento', 'Actividad', 'Curso');
+
+CREATE TYPE TIPO_OPERACION_LOG AS ENUM ('INSERT', 'UPDATE', 'DELETE');
+
 
 -- ==============================================================
 -- Tabla persona
@@ -180,7 +183,7 @@ CREATE TABLE profesion (
     titulo_profesion   VARCHAR(100) NOT NULL,
     nivel_profesion    NIVEL_PROFESION_ENUM NOT NULL, 
     area_profesion     VARCHAR(100),
-    codigo_profesion   VARCHAR(50),
+    codigo_profesion   VARCHAR(50)
 );
 
 -- Tabla profesion_persona 
@@ -531,7 +534,7 @@ CREATE TABLE log_cambios (
     datos_anteriores        JSONB,                -- Datos antes del cambio (solo para UPDATE/DELETE)
     datos_nuevos            JSONB,                -- Datos después del cambio (solo para INSERT/UPDATE)
     id_usuario_modificacion VARCHAR(100),         
-    fecha_cambio            TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+    fecha_cambio            TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
 
     FOREIGN KEY (id_usuario_modificacion) REFERENCES persona (id_persona) ON DELETE RESTRICT ON UPDATE CASCADE
 
