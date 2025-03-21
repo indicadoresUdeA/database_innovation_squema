@@ -287,7 +287,7 @@ CREATE TABLE red_social_persona_empresa (
     id_persona             INT,
     id_empresa             INT,
 
-    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -485,10 +485,10 @@ CREATE TABLE actividad_momento (
     observaciones_actividad                TEXT,
     fecha_registro_actividad_producto      TIMESTAMP,
     id_persona_emprendedor                 INT,
-    id_documentacion_procedimiento         INT,
+    id_etapa_asunto_trabajo_proyecto_actividad         INT,
 
     FOREIGN KEY (id_persona_emprendedor) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
-    FOREIGN KEY (id_documentacion_procedimiento) REFERENCES documentacion_procedimiento (id_documentacion_procedimiento) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_etapa_asunto_trabajo_proyecto_actividad) REFERENCES etapa_asunto_trabajo_proyecto_actividad (id_etapa_asunto_trabajo_proyecto_actividad) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE dimension_emprendimiento (
