@@ -9,6 +9,7 @@ CREATE DATABASE innovacion;
 CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Intersexual');
 CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Género fluido', 'Agénero', 'Prefiero no decirlo', 'Otro');
 CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', , 'Pasaporte (P)', , 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)');
+CREATE TYPE ESTRATO_SOCIOECONOMICO_ENUM AS ENUM ('Estrato 1 (Bajo-bajo)', 'Estrato 2 (Bajo)', 'Estrato 3 (Medio-bajo)', 'Estrato 4 (Medio)', 'Estrato 5 (Medio-alto)', 'Estrato 6 (Alto)')
 
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural', 'Periurbana');
@@ -24,14 +25,17 @@ CREATE TYPE AREA_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Ingeniería', 'Ciencias Socia
 CREATE TYPE ESTADO_ACADEMICO_ENUM AS ENUM ('En curso', 'Graduado', 'Retirado');
 CREATE TYPE TIPO_EMPLEO_ENUM AS ENUM ('Temporal', 'Fijo', 'Mixto');
 CREATE TYPE ESTADO_DESARROLLO_EMPREN_ENUM AS ENUM ('En incubación', 'Consolidado', 'En pausa', 'Finalizado');
+
 CREATE TYPE ETADO_PROGRAMA_ENUM AS ENUM ('Activo', 'Inactivo', 'En desarrollo', 'Finalizado');
 CREATE TYPE PRIORIDAD_PROGRAMA_ENUM AS ENUM ('Alta', 'Media', 'Baja');
 CREATE TYPE ETAPA_PROGRAMA_ENUM AS ENUM ('Planificación', 'Ejecución', 'Cierre', 'Post-cierre');
+
 CREATE TYPE ESTADO_PROYECTO_ENUM AS ENUM ('Pendiente', 'En ejecución', 'Finalizado', 'Cancelado');
 CREATE TYPE PRIORIDAD_PROYECTO_ENUM AS ENUM ('Alta', 'Media', 'Baja');
 CREATE TYPE ETAPA_PROYECTO_ENUM AS ENUM ('Planificación', 'Ejecución', 'Cierre', 'Post-cierre');
 CREATE TYPE TIPO_APORTE_ENUM AS ENUM ('Gubernamental', 'Privado', 'Internacional', 'Mixto');
 CREATE TYPE ESTADO_FINANCIACION_ENUM AS ENUM ('Aprobado', 'Pendiente', 'Rechazado', 'Finalizado');
+
 CREATE TYPE MODALIDAD_ACTIVIDAD_ENUM AS ENUM ('Virtual', 'Presencial', 'Híbrido');
 CREATE TYPE TIPO_ACTIVIDAD_ENUM AS ENUM ('Evento', 'Actividad', 'Curso');
 
@@ -47,7 +51,7 @@ CREATE TABLE persona (
     genero                       GENERO_ENUM NOT NULL,
     telefono_celular             VARCHAR(20),
     correo_electronico           VARCHAR(100) UNIQUE NOT NULL,
-    estrato_socioeconomico       INT CHECK (estrato_socioeconomico BETWEEN 1 AND 6),
+    estrato_socioeconomico       ESTRATO_SOCIOECONOMICO_ENUM,
     fecha_nacimiento_persona     DATE NOT NULL,
     es_emprendedor               BOOLEAN DEFAULT FALSE,   
     foto_persona_url             TEXT,              
