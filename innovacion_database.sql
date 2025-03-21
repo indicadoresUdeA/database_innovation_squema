@@ -72,13 +72,31 @@ CREATE TABLE ciudad (
     FOREIGN KEY (id_region) REFERENCES region (id_region) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+CREATE TABLE comuna (
+    id_comuna                 SERIAL PRIMARY KEY,
+    url_polygon_comuna        TEXT,
+    nombre_comuna             VARCHAR(100) NOT NULL,
+    id_ciudad                 INT NOT NULL,
+    
+    FOREIGN KEY (id_ciudad) REFERENCES ciudad (id_ciudad) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE barrio (
+    id_barrio                 SERIAL PRIMARY KEY,
+    url_polygon_barrio        TEXT,
+    nombre_barrio             VARCHAR(100) NOT NULL,
+    id_comuna                 INT NOT NULL,
+    
+    FOREIGN KEY (id_comuna) REFERENCES comuna (id_comuna) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 CREATE TABLE direccion (
     id_direccion              SERIAL PRIMARY KEY,
     direccion_textual         VARCHAR(200) NOT NULL,
     codigo_postal             CHAR(10),
-    id_ciudad                 INT NOT NULL,
+    id_barrio                 INT NOT NULL,
 
-    FOREIGN KEY (id_ciudad) REFERENCES ciudad (id_ciudad) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (id_barrio) REFERENCES barrio (id_barrio) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- ==============================================================
