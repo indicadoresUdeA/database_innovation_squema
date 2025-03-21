@@ -235,8 +235,8 @@ CREATE TABLE programa (
 CREATE TABLE proyecto (
     id_proyecto                   SERIAL PRIMARY KEY,
     id_programa                   INT,
-    id_lider_proyecto             VARCHAR(255),
-    id_responsable_proyecto       VARCHAR(255),
+    id_lider_proyecto             INT,
+    id_responsable_proyecto       INT,
     estado_proyecto               ESTADO_PROYECTO_ENUM,
     propuesta_proyecto            TEXT,
     prioridad_proyecto            PRIORIDAD_PROYECTO_ENUM,
@@ -287,7 +287,43 @@ CREATE TABLE seguimiento_proyecto (
     id_seguimiento_proyecto         SERIAL PRIMARY KEY,
     id_proyecto                     INT
     porcentaje_realizacion_proyecto DECIMAL(5, 2),
-    etapa_proyecto                  ETAPA_PROYECTO_ENUM,                  
+    etapa_proyecto                  ETAPA_PROYECTO_ENUM,
+    fecha_reporte                   DATE   
+
+
+    FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE
+               
+);
+
+CREATE TABLE mapa_conocimiento_proceso (
+    id_mapa_conocimiento                  SERIAL PRIMARY KEY,
+    estado_mapa
+    url_mapa
+    nombre_proceso                        VARCHAR(255),
+    vista_proceso                         VARCHAR(255),
+    responsable_proceso                   VARCHAR(255),
+    prioridad_proceso                     VARCHAR(100),
+    estado_documentacion                  VARCHAR(100),
+    cronograma_start                      DATE,
+    cronograma_end                        DATE,
+    depende_de                            VARCHAR(255),
+    duracion_proceso                      INTERVAL,
+    fecha_inicio_proceso                  DATE,
+    fecha_finalizacion_proceso            DATE,
+    esfuerzo_planificado                  DECIMAL,
+    esfuerzo_real                         DECIMAL,
+    presupuesto_proceso                   DECIMAL,
+    tipo_proyecto                         VARCHAR(100),
+    cartera_programas                     TEXT,
+    cartera_proyectos                     TEXT,
+    texto_ag_pe                           VARCHAR(255),
+    programa_tipoproyecto                 VARCHAR(255),
+    ag_pe_unico                           VARCHAR(255),
+    ag_pe_u                               VARCHAR(255),
+    link_nueva_cartera                    TEXT,
+    link_mapas_conocimientos_diagramas_flujo_bpmn_2_0 TEXT,
+    asuntos_trabajo_proceso_ejecutable_di_ap TEXT,
+    ag_o_pe                               VARCHAR(255)
 );
 
 -- ===========================================================================
