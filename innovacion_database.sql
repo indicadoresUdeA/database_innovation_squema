@@ -142,21 +142,12 @@ CREATE TABLE empresa (
     FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Tabla cargos
-CREATE TABLE cargo (
-    id_cargo                SERIAL PRIMARY KEY,
-    nombre_cargo            VARCHAR(100),
-    responsabilidades       TEXT,
-    correo_cargo            VARCHAR(50)
-);
-
 -- Tabla relacion_empresa_persona
 CREATE TABLE relacion_empresa_persona (
     id_rel_empresa_persona   SERIAL PRIMARY KEY,
     id_persona               INT NOT NULL,
     id_empresa               INT NOT NULL,
     rol                      ROL_ENUM NOT NULL,
-    id_cargo                 INT,   
 
     FOREIGN KEY (id_cargo) REFERENCES cargo (id_cargo) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
