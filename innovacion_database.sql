@@ -4,6 +4,7 @@ CREATE DATABASE innovacion;
 -- Conexión a la base de datos
 \c innovacion;
 
+-- ==============================================================
 -- Enumerados para tipos específicos
 CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Intersexual');
 CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Género fluido', 'Agénero', 'Prefiero no decirlo', 'Otro');
@@ -21,11 +22,18 @@ CREATE TYPE TIPO_UBICACION_UNIDAD_IE_ENUM AS ENUM ('Campus', 'Sede', 'Sede únic
 CREATE TYPE NIVEL_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Técnica profesional', 'Tecnológico', 'Profesional', 'Especialización', 'Maestría', 'Doctorado');
 CREATE TYPE AREA_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Ingeniería', 'Ciencias Sociales', 'Ciencias Naturales', 'Artes', 'Humanidades');
 CREATE TYPE ESTADO_ACADEMICO_ENUM AS ENUM ('En curso', 'Graduado', 'Retirado');
+CREATE TYPE TIPO_EMPLEO_ENUM AS ENUM ('Temporal', 'Fijo', 'Mixto');
+CREATE TYPE ESTADO_DESARROLLO_EMPREN_ENUM AS ENUM ('En incubación', 'Consolidado', 'En pausa', 'Finalizado');
+CREATE TYPE ETADO_PROGRAMA_ENUM AS ENUM ('Activo', 'Inactivo', 'En desarrollo', 'Finalizado');
+CREATE TYPE PRIORIDAD_PROGRAMA_ENUM AS ENUM ('Alta', 'Media', 'Baja');
+CREATE TYPE ETAPA_PROGRAMA_ENUM AS ENUM ('Planificación', 'Ejecución', 'Cierre', 'Post-cierre');
+CREATE TYPE ESTADO_PROYECTO_ENUM AS ENUM ('Pendiente', 'En ejecución', 'Finalizado', 'Cancelado');
+CREATE TYPE PRIORIDAD_PROYECTO_ENUM AS ENUM ('Alta', 'Media', 'Baja');
+CREATE TYPE ETAPA_PROYECTO_ENUM AS ENUM ('Planificación', 'Ejecución', 'Cierre', 'Post-cierre');
+CREATE TYPE TIPO_APORTE_ENUM AS ENUM ('Gubernamental', 'Privado', 'Internacional', 'Mixto');
+CREATE TYPE ESTADO_FINANCIACION_ENUM AS ENUM ('Aprobado', 'Pendiente', 'Rechazado', 'Finalizado');
 
-CREATE TYPE MODALIDAD_ACTIVIDAD_ENUM AS ENUM ('Virtual', 'Presencial', 'Híbrido');
-CREATE TYPE TIPO_ACTIVIDAD_ENUM AS ENUM ('Evento', 'Actividad', 'Curso', 'Convocatoria');
-
-
+-- ==============================================================
 -- Tabla persona
 CREATE TABLE persona (
     id_persona                   SERIAL PRIMARY KEY,
@@ -74,11 +82,21 @@ CREATE TABLE relacion_empresa_persona (
     id_persona               INT NOT NULL,
     id_empresa               INT NOT NULL,
     rol                      ROL_ENUM NOT NULL,
+    id_cargo                 CARGO_ENUM,   
 
+    FOREIGN KEY (id_cargo) REFERENCES cargo (id_cargo) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- Tabla cargos
+CREATE TABLE cargo (
+    id_cargo                SERIAL PRIMARY KEY,
+    nombre_cargo            VARCHAR(100),
+    responsabilidades       TEXT
+);
+
+-- ==============================================================
 -- Tabla unidad_ie (Unidad de Institución Educativa)
 CREATE TABLE unidad_ie (
     id_unidad_ie            SERIAL PRIMARY KEY,
@@ -133,7 +151,138 @@ CREATE TABLE programa_academico_persona (
     FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Jerarquía geográfica
+-- ===========================================================================
+-- Tabla profesion
+CREATE TABLE profesion (
+    id_profesion       SERIAL PRIMARY KEY,
+    titulo_profesion   VARCHAR(100) NOT NULL,
+    nivel_profesion    NIVEL_PROFESION_ENUM NOT NULL, 
+    area_profesion     VARCHAR(100),
+    codigo_profesion   VARCHAR(50),
+);
+
+-- Tabla profesion_persona 
+CREATE TABLE profesion_persona (
+    id_persona_profesion  SERIAL PRIMARY KEY,
+    id_profesion          INT NOT NULL,
+    id_persona            INT NOT NULL,
+    anios_experiencia     INT,
+
+    FOREIGN KEY (id_profesion) REFERENCES profesion (id_profesion) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabla red_social_persona
+CREATE TABLE red_social_persona (
+    id_red_social_persona  SERIAL PRIMARY KEY,
+    nombre_plataforma      VARCHAR(50) NOT NULL,
+    url_perfil             TEXT,
+    id_persona             INT NOT NULL,
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabla red_social_empresa
+CREATE TABLE red_social_empresa (
+    id_red_social_empresa  SERIAL PRIMARY KEY,
+    nombre_plataforma      VARCHAR(50) NOT NULL,
+    url_perfil             TEXT,
+    id_empresa             INT NOT NULL,
+
+    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabla emprendimiento
+CREATE TABLE emprendimiento (
+    id_emprendimiento                SERIAL PRIMARY KEY,
+    id_empresa                       INT,
+    surgimiento_emprendimiento       VARCHAR(255), 
+    estado_desarrollo_emprendimiento ESTADO_DESARROLLO_EMPREN_ENUM NOT NULL,
+    cantidad_clientes_promedio_mes   INT,
+    tiene_camara_comercio            BOOLEAN DEFAULT FALSE,      
+    genera_ingresos                  BOOLEAN,     
+    genera_empleo                    BOOLEAN,
+    tipo_empleo                      TIPO_EMPLEO_ENUM,
+    cantidad_empleados               INT,
+    realiza_comercio_internacional   BOOLEAN,
+
+    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- ===========================================================================
+
+CREATE TABLE programa (
+    id_programa                     SERIAL PRIMARY KEY,
+    nombre_programa                 VARCHAR(255) NOT NULL,
+    objetivo_general_programa       TEXT,
+    id_responsable_articulacion     VARCHAR(255),
+    id_lider_coordinador            VARCHAR(255),
+    tipo_programa                   TIPO_PROGRAMA_ENUM,
+    estado_programa                 ESTADO_PROGRAMA_ENUM DEFAULT 'Activo',
+    unidad_academica_administrativa VARCHAR(255),
+    equipo_principal                TEXT,
+    contratos_persona_natural       TEXT,
+    correo_electronico              VARCHAR(255),
+    numero_telefono                 VARCHAR(20),
+    prioridad_programa              PRIORIDAD_PROGRAMA_ENUM,
+    etapa_programa                  ETAPA_PROGRAMA_ENUM,
+    resumen_estado_proyecto         TEXT,
+    id_mapa_proceso                 TEXT
+);
+
+CREATE TABLE proyecto (
+    id_proyecto                   SERIAL PRIMARY KEY,
+    id_programa                   INT,
+    id_lider_proyecto             VARCHAR(255),
+    id_responsable_proyecto       VARCHAR(255),
+    estado_proyecto               ESTADO_PROYECTO_ENUM,
+    propuesta_proyecto            TEXT,
+    prioridad_proyecto            PRIORIDAD_PROYECTO_ENUM,
+    etapa_proyecto                ETAPA_PROYECTO_ENUM,
+    porcentaje_realizacion_proyecto DECIMAL(5, 2),
+    fecha_inicio_proyecto         DATE,
+    fecha_finalizacion_proyecto   DATE,
+    numero_contrato               VARCHAR(50),
+    tipo_primario_proyecto        VARCHAR(100),
+    figura_contractual            VARCHAR(100),
+    alcance_proyecto              TEXT,
+    presupuesto_proyecto          DECIMAL,
+    moneda_proyecto               VARCHAR(10)
+    url_propuesta_proyecto        TEXT,
+    url_presupuesto               TEXT,
+    url_contrato                  TEXT,
+    url_acta_inicio               TEXT,
+    url_polizas                   TEXT,
+    url_acta_finalizacion         TEXT,
+
+    FOREIGN KEY (id_programa) REFERENCES programa (id_programa) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_lider_proyecto) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (id_responsable_proyecto) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
+);
+
+CREATE TABLE proceso_financiacion (
+    id_proceso_financiacion         SERIAL PRIMARY KEY,
+    id_proyecto                     INT NOT NULL,
+    tipo_aporte                     TIPO_APORTE_ENUM
+    moneda                          VARCHAR(50) NOT NULL,
+    excepcion_contribucion          BOOLEAN DEFAULT FALSE,
+    fuente_financiacion_primaria    VARCHAR(255), 
+    id_contratante                  INT, 
+    id_empresa                      INT, 
+    id_persona_encargada            INT, 
+    porcentaje_financiacion         DECIMAL(5, 2),
+    valor_financiacion              DECIMAL, 
+    fecha_inicio_financiacion       DATE, 
+    fecha_finalizacion_financiacion DATE, 
+    estado_financiacion             VARCHAR(100), 
+
+    FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_contratante) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (id_persona_encargada) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- ===========================================================================
+-- Jerarquía geográfica 
 CREATE TABLE pais (
     id_pais                   SERIAL PRIMARY KEY,
     nombre_pais               VARCHAR(100) NOT NULL,
@@ -177,6 +326,20 @@ CREATE TABLE direccion (
     FOREIGN KEY (id_ciudad) REFERENCES ciudad (id_ciudad) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+-- ==============================================================
+-- Tabla de logs
+CREATE TABLE log_cambios (
+    id_log                  SERIAL PRIMARY KEY,
+    nombre_tabla            VARCHAR(100) NOT NULL, -- Nombre de la tabla afectada
+    tipo_operacion          VARCHAR(10) NOT NULL,  -- 'INSERT', 'UPDATE', 'DELETE' Hacer ENUM
+    id_registro_afectado    INT NOT NULL,         
+    datos_anteriores        JSONB,                -- Datos antes del cambio (solo para UPDATE/DELETE)
+    datos_nuevos            JSONB,                -- Datos después del cambio (solo para INSERT/UPDATE)
+    usuario_modificacion    VARCHAR(100),         
+    fecha_cambio            TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+);
+
+-- ==============================================================
 -- Índices compuestos para optimizar consultas
 CREATE INDEX idx_relacion_persona_empresa ON relacion_empresa_persona (id_persona, id_empresa);
 CREATE INDEX idx_correo_persona ON persona (correo_electronico);
