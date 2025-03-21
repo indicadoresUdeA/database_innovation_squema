@@ -32,6 +32,8 @@ CREATE TYPE PRIORIDAD_PROYECTO_ENUM AS ENUM ('Alta', 'Media', 'Baja');
 CREATE TYPE ETAPA_PROYECTO_ENUM AS ENUM ('Planificación', 'Ejecución', 'Cierre', 'Post-cierre');
 CREATE TYPE TIPO_APORTE_ENUM AS ENUM ('Gubernamental', 'Privado', 'Internacional', 'Mixto');
 CREATE TYPE ESTADO_FINANCIACION_ENUM AS ENUM ('Aprobado', 'Pendiente', 'Rechazado', 'Finalizado');
+CREATE TYPE MODALIDAD_ACTIVIDAD_ENUM AS ENUM ('Virtual', 'Presencial', 'Híbrido');
+CREATE TYPE TIPO_ACTIVIDAD_ENUM AS ENUM ('Evento', 'Actividad', 'Curso');
 
 -- ==============================================================
 -- Tabla persona
