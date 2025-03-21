@@ -109,6 +109,7 @@ CREATE TABLE unidad_ie (
     tipo_vinculo_ie         TIPO_VINCULO_UNIDAD_IE_ENUM NOT NULL,
     nombre_unidad           VARCHAR(100) NOT NULL,
     tipo_ubicacion          TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
+    id_direccion
     id_empresa              INT NOT NULL,
 
     FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
@@ -217,118 +218,248 @@ CREATE TABLE emprendimiento (
 -- ===========================================================================
 -- Tabla programa
 CREATE TABLE programa (
-    id_programa                     SERIAL PRIMARY KEY,
-    nombre_programa                 VARCHAR(255) NOT NULL,
-    objetivo_general_programa       TEXT,
-    id_responsable_articulacion     VARCHAR(255),
-    id_lider_coordinador            VARCHAR(255),
-    tipo_programa                   TIPO_PROGRAMA_ENUM,
-    estado_programa                 ESTADO_PROGRAMA_ENUM DEFAULT 'Activo',
-    unidad_academica_administrativa VARCHAR(255),
-    equipo_principal                TEXT,
-    contratos_persona_natural       TEXT,
-    correo_electronico              VARCHAR(255),
-    numero_telefono                 VARCHAR(20),
-    prioridad_programa              PRIORIDAD_PROGRAMA_ENUM,
-    etapa_programa                  ETAPA_PROGRAMA_ENUM,
-    resumen_estado_proyecto         TEXT,
-    id_mapa_proceso                 TEXT
+    id_programa                         SERIAL PRIMARY KEY, -- id_programa
+    nombre_programa                     VARCHAR(255) NOT NULL, -- Nombre
+    responsable_articulacion_programa   VARCHAR(255), -- Nombre del responsable de articular el programa
+    nombre_corto_programa               VARCHAR(255), -- Nombre corto - form
+    nombre_corto_alt_programa           VARCHAR(255), -- Nombre corto del programa
+    objetivo_programa                   TEXT, -- Objetivo general del programa
+    tipo_programa                       VARCHAR(100), -- Tipo de programa
+    estado_programa                     VARCHAR(100), -- Estado del programa
+    unidad_administrativa_programa      VARCHAR(255), -- Unidad académica o administrativa, o entidad externa de distribución del dinero
+    anio_programa                       INT, -- Año
+    valor_programa                      NUMERIC(15,2), -- Valor
+    asuntos_trabajo_programa            TEXT, -- Asuntos de Trabajo del Asunto de Gestión ó Proceso Ejecutable_DI-AP-FO-007
+    gestion_procesos_programa           TEXT, -- AG y PE - Asuntos de Gestión y Procesos Ejecutables
+    lider_programa                      VARCHAR(255), -- Líder / Coordinador
+    cronograma_real_programa            TEXT, -- Cronograma real
+    equipo_programa                     TEXT, -- Equipo principal
+    roles_funciones_programa            TEXT, -- Roles y funciones
+    talento_programa                    TEXT, -- Talento humano
+    id_usuarios_programa                INT, -- ID usuarios
+    contratos_naturales_programa        TEXT, -- Contratos persona natural
+    correo_programa                     VARCHAR(255), -- Correo electrónico
+    telefono_programa                   VARCHAR(20), -- Número de teléfono
+    estado_rag_programa                 VARCHAR(100), -- Estado del programa (RAG)
+    prioridad_programa                  VARCHAR(100), -- Prioridad
+    etapa_programa                      VARCHAR(100), -- Etapa
+    cronograma_inicio_programa          DATE, -- Cronograma planificado - Start
+    cronograma_fin_programa             DATE, -- Cronograma planificado - End
+    resumen_estado_programa             TEXT, -- Resumen del estado del proyecto
+    objetivo_secundario_programa        TEXT, -- Objetivo general del programa2
+    link_mapas_conocimiento_programa    TEXT, -- link a Procesos mapas de conocimientos
+    equipo_principal3                   TEXT, -- Euipo principal3
+    tipo_programa_texto                 TEXT, -- Tipo de programa texto
 );
+
 
 -- Tabla proyecto
 CREATE TABLE proyecto (
-    id_proyecto                   SERIAL PRIMARY KEY,
-    id_programa                   INT,
-    id_lider_proyecto             INT,
-    id_responsable_proyecto       INT,
-    estado_proyecto               ESTADO_PROYECTO_ENUM,
-    propuesta_proyecto            TEXT,
-    prioridad_proyecto            PRIORIDAD_PROYECTO_ENUM,
-    fecha_inicio_proyecto         DATE,
-    fecha_finalizacion_proyecto   DATE,
-    numero_contrato               VARCHAR(50),
-    tipo_primario_proyecto        VARCHAR(100),
-    figura_contractual            VARCHAR(100),
-    alcance_proyecto              TEXT,
-    presupuesto_proyecto          DECIMAL,
-    moneda_proyecto               VARCHAR(10)
-    url_propuesta_proyecto        TEXT,
-    url_presupuesto               TEXT,
-    url_contrato                  TEXT,
-    url_acta_inicio               TEXT,
-    url_polizas                   TEXT,
-    url_acta_finalizacion         TEXT,
+    id_proyecto                        SERIAL PRIMARY KEY, -- id_proyecto
+    estado_proyecto                    VARCHAR(100),   -- estado_proyecto
+    prioridad_proyecto                  VARCHAR(100),   -- prioridad
+    etapa_proyecto                      VARCHAR(100),   -- etapa
+    fecha_inicio_proyecto               DATE,           -- fecha_inicio
+    fecha_finalizacion_proyecto         DATE,           -- fecha_finalizacion
+    numero_contrato_proyecto            VARCHAR(50),    -- numero_contrato
+    objeto_proyecto                     TEXT,           -- objeto_proyecto
+    tipo_ingreso_proyecto               VARCHAR(100),   -- tipo_ingreso
+    tipo_primario_proyecto              VARCHAR(100),   -- tipo_primario_proyecto
+    figura_contractual_proyecto         VARCHAR(100),   -- figura_contractual
+    fuente_recurso_proyecto             VARCHAR(255),   -- Fuente_recurso
+    alcance_proyecto                    TEXT,           -- alcance
+    contribucion_udea_proyecto          NUMERIC(15,2),  -- contribucion_UdeA
+    excepcion_contribucion_proyecto     TEXT,           -- excepcion_contribución
+    contribucion_division_innovacion    NUMERIC(15,2),  -- contribucion_division_innovacion
+    fuente_primaria_financiacion        VARCHAR(255),   -- fuente_primaria_financiacion
+    contratante_proyecto                VARCHAR(255),   -- contratante
+    valor_proyecto                      NUMERIC(15,2),  -- valor
+    moneda_proyecto                     VARCHAR(50),    -- moneda
+    aporte_aliado_efectivo_proyecto     NUMERIC(15,2),  -- aporte_aliado_efectivo
+    aporte_otros_aliados_especie        NUMERIC(15,2),  -- aporte_otros_aliados_especie
+    aporte_otros_aliados_efectivo       NUMERIC(15,2),  -- aporte_otros_aliados_efectivo
+    aporte_udea_especie_proyecto        NUMERIC(15,2),  -- aporte_UdeA_especie
+    lider_proyecto                      VARCHAR(255),   -- Líder
+    adjunto_propuesta_proyecto          TEXT,           -- adjunto_propuesta_proyecto
+    adjunto_presupuesto_proyecto        TEXT,           -- adjunto_presupuesto
+    adjunto_contrato_proyecto           TEXT,           -- adjunto_contrato
+    adjunto_acta_inicio_proyecto        TEXT,           -- adjunto_acta_inicio
+    adjunto_polizas_proyecto            TEXT,           -- adjunto_polizas
+    adjunto_acta_finalizacion_proyecto  TEXT,           -- adjunto_acta_finalización
+    id_programa                         INT,            -- id_programa
 
-    FOREIGN KEY (id_programa) REFERENCES programa (id_programa) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_lider_proyecto) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
-    FOREIGN KEY (id_responsable_proyecto) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (id_programa) REFERENCES programa(id_programa) ON DELETE SET NULL
 );
 
--- Tabla proceso de financiacion
-CREATE TABLE proceso_financiacion (
-    id_proceso_financiacion         SERIAL PRIMARY KEY,
-    id_proyecto                     INT NOT NULL,
-    tipo_aporte                     TIPO_APORTE_ENUM
-    moneda                          VARCHAR(50) NOT NULL,
-    excepcion_contribucion          BOOLEAN DEFAULT FALSE,
-    fuente_financiacion_primaria    VARCHAR(255), 
-    id_contratante                  INT, 
-    id_empresa                      INT, 
-    id_persona_encargada            INT, 
-    porcentaje_financiacion         DECIMAL(5, 2),
-    valor_financiacion              DECIMAL, 
-    fecha_inicio_financiacion       DATE, 
-    fecha_finalizacion_financiacion DATE, 
-    estado_financiacion             VARCHAR(100), 
 
+CREATE TABLE ag_o_pe (
+    id_ag_o_pe                           SERIAL PRIMARY KEY, -- id_ag_o_pe
+    nombre_ag_o_pe                       VARCHAR(255),   -- nombre_ag_o_pe
+    personas_ag_o_pe                      TEXT,           -- Personas
+    tipo_ag_pe                            VARCHAR(100),   -- TIPO AG-PE
+    procesos_ag_pe                        TEXT,           -- AG y PE - Procesos
+    macroproceso_ag_pe                    TEXT,           -- AG y PE - Macroproceso
+    proceso_ejecutable_gestion            TEXT,           -- Proceso ejecutable o Asunto de gestión
+    marco_proceso_ag_pe                   TEXT,           -- Marco proceso
+    sigla_larga_ag_pe                     VARCHAR(100),   -- Sigla larga
+    sigla_corta_ag_pe                     VARCHAR(50),    -- Sigla corta
+    objetivo_ag_pe                        TEXT,           -- Objetivo
+    link_requerimientos_contratos         TEXT,           -- link to Requerimientos de contratos
+    conectar_tableros_ag_pe               TEXT,           -- Conectar tableros
+    link_asuntos_trabajo_ag_pe            TEXT,           -- link to AG y PE - Asuntos de Trabajo
+    componente_descriptivo_ag_pe          TEXT,           -- 2. Componente descriptivo
+    reflejo_ag_pe                         TEXT,           -- Reflejo
+    link_bitacora_innovacion              TEXT,           -- link to Bitácora_Relacionamiento División de Innovación 2024
+    link_talento_humano_ag_pe             TEXT,           -- link to Talento Humano
+    link_duplicado_formulario_eventos     TEXT,           -- link to Duplicado de Formulario para el cargue de eventos del ecosistema
+    link_subelementos_tactico             TEXT,           -- link to Subelementos de Táctico-Asuntos de Gestión y Procesos Ejecutables
+    link_roles_funciones_ag_pe            TEXT            -- link to Roles y funciones
+);
+
+
+CREATE TABLE asunto_de_trabajo_tipo_emprendimiento (
+    id_asunto_trabajo                      SERIAL PRIMARY KEY, -- id_asunto_de_trabajo
+    nombre_asunto_trabajo                   VARCHAR(255),   -- Nombre asunto de trabajo
+    descripcion_asunto_trabajo               TEXT,           -- Objetivo, definición y descripción del Asunto de Trabajo
+    ultima_actualizacion_asunto_trabajo      TIMESTAMP,      -- Última actualización
+    responsable_asunto_trabajo               VARCHAR(255),   -- Responsable del Asunto de Trabajo
+    talento_humano_asunto_trabajo            TEXT,           -- Talento Humano
+    perfil_monday_asunto_trabajo             TEXT,           -- Perfil Monday
+    procesos_gestion_asunto_trabajo          TEXT,           -- AG y PE - Asuntos de Gestión y Procesos Ejecutables
+    proceso_asunto_trabajo                   TEXT,           -- AG y PE - Proceso
+    macroproceso_asunto_trabajo              TEXT,           -- AG y PE - Macro Proceso
+    nombre_responsable_ag_pe                 VARCHAR(255),   -- Nombre responsable AG-PE
+    cuenta_responsable_ag_pe                 VARCHAR(255),   -- Cuenta responsable AG-PE
+    link_proyectos_principal                 TEXT,           -- link to Proyectos_PRINCIPAL
+    link_programas_principal                 TEXT,           -- link to Programas_PRINCIPAL
+    link_nivel_nano                          TEXT,           -- link to Nivel Nano (Acciones, Actividades, Tareas, Sprint’s)
+    link_nivel_meso                          TEXT,           -- link to Nivel Meso (Táctico Objetivos por Asuntos de Gestión y Procesos Ejecutables)
+    link_bitacora_innovacion                 TEXT,           -- link to Bitácora_Relacionamiento División de Innovación 2024
+    link_operacion_asuntos_trabajo           TEXT,           -- link to Operación-Asuntos de trabajo
+    agrupacion_asunto_trabajo                TEXT,           -- Agrupación
+    link_bitacora_actividades_personal       TEXT,           -- link to Bitacora_Actividades-Personal Contratado 2025
+    link_roles_funciones_asunto_trabajo      TEXT,           -- link to Roles y funciones
+    link_portafolio_servicios                TEXT,           -- link to Portafolio de servicios
+    id_ag_o_pe                               INT,            -- id_ag_o_pe
+
+    FOREIGN KEY (id_ag_o_pe) REFERENCES ag_o_pe(id_ag_o_pe) ON DELETE SET NULL
+);
+
+
+CREATE TABLE documentacion_procedimiento (
+    id_documentacion_procedimiento            SERIAL PRIMARY KEY,
+    id_asunto_trabajo                         INT,
+    id_proyecto                               INT,
+
+    FOREIGN KEY (id_asunto_trabajo) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_de_trabajo) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_contratante) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
-    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE SET NULL ON UPDATE CASCADE,
-    FOREIGN KEY (id_persona_encargada) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
-CREATE TABLE seguimiento_proyecto (
-    id_seguimiento_proyecto         SERIAL PRIMARY KEY,
-    id_proyecto                     INT
-    porcentaje_realizacion_proyecto DECIMAL(5, 2),
-    etapa_proyecto                  ETAPA_PROYECTO_ENUM,
-    fecha_reporte                   DATE   
+CREATE TABLE actividad_momento (
+    id_actividad                          SERIAL PRIMARY KEY,
+    fecha_actividad_evento_momento_interaccion TIMESTAMP,
+    nombre_actividad_evento_momento_interaccion VARCHAR(255),
+    descripcion_actividad_evento_momento_interaccion TEXT,
+    hora_inicio_actividad_evento_momento_interaccion TIME,
+    hora_finalizacion_actividad_evento_momento_interaccion TIME,
+    tematica_actividad_evento_momento_interaccion VARCHAR(255),
+    modalidad_actividad_evento_momento_interaccion VARCHAR(100),
+    tipo_actividad_evento_momento_interaccion VARCHAR(100),
+    materiales_actividad_evento            TEXT,
+    alimentacion_actividad_evento          BOOLEAN,
+    duracion_actividad                     INTERVAL,
+    facilitador_actividad                  VARCHAR(255),
+    ag_o_pe                                VARCHAR(255),
+    como_se_entro_convocatoria             VARCHAR(255),
+    autorizacion_datos                     BOOLEAN,
+    habeas_data                           BOOLEAN,
+    fase_actividad                         VARCHAR(100),
+    semestre_ejecucion_fase                VARCHAR(100),
+    observaciones_actividad                TEXT,
+    fecha_registro_actividad_producto      TIMESTAMP,
+    id_persona_emprendedor                 INT,
+    id_proyecto                            INT,
+    id_asunto_trabajo                      INT,
+
+    FOREIGN KEY (id_persona_emprendedor) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_asunto_trabajo) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_de_trabajo) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE subactividad_producto (
+    id_subactividad                       SERIAL PRIMARY KEY,
+    nombre_subactividad_producto          VARCHAR(255),
+    tipo_subactividad_producto            VARCHAR(100),
+    fecha_subactividad_producto           DATE,
+    descripcion_subactividad_producto     TEXT,
+    hora_inicio_subactividad              TIME,
+    hora_finalizacion_subactividad        TIME,
+    tematica_subactividad                 VARCHAR(255),
+    modalidad_subactividad                VARCHAR(100),
+    materiales_subactividad_evento        TEXT,
+    alimentacion_subactividad_evento      BOOLEAN,
+    duracion_subactividad                 INTERVAL,
+    facilitador_subactividad              VARCHAR(255),
+    observaciones_subactividad            TEXT,
+    autorizacion_datos                    BOOLEAN,
+    fecha_registro                        TIMESTAMP,
+    id_actividad                          INT,
+    id_direccion                          INT,
+    id_dimension_emprendimiento           INT,
+
+    FOREIGN KEY (id_actividad) REFERENCES actividad_momento (id_actividad) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (id_dimension_emprendimiento) REFERENCES dimension_emprendimiento (id_dimension_emprendimiento) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 
-    FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE
-               
+CREATE TABLE relacion_actividad_persona (
+    id_relacion_actividad_persona         SERIAL PRIMARY KEY,
+    id_persona                            INT NOT NULL,
+    id_subactividad                       INT NOT NULL,
+
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_subactividad) REFERENCES subactividad_producto (id_subactividad) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE dimension_emprendimiento (
+    id_dimension_emprendimiento           SERIAL PRIMARY KEY,
+    nombre_dimension_emprendimiento       VARCHAR(255),
+    descripcion_dimension_emprendimiento  TEXT,
+    responsable_dimension_emprendimiento  VARCHAR(255)
 );
 
 CREATE TABLE mapa_conocimiento_proceso (
-    id_mapa_conocimiento                  SERIAL PRIMARY KEY,
-    estado_mapa
-    url_mapa
-    nombre_proceso                        VARCHAR(255),
-    vista_proceso                         VARCHAR(255),
-    responsable_proceso                   VARCHAR(255),
-    prioridad_proceso                     VARCHAR(100),
-    estado_documentacion                  VARCHAR(100),
-    cronograma_start                      DATE,
-    cronograma_end                        DATE,
-    depende_de                            VARCHAR(255),
-    duracion_proceso                      INTERVAL,
-    fecha_inicio_proceso                  DATE,
-    fecha_finalizacion_proceso            DATE,
-    esfuerzo_planificado                  DECIMAL,
-    esfuerzo_real                         DECIMAL,
-    presupuesto_proceso                   DECIMAL,
-    tipo_proyecto                         VARCHAR(100),
-    cartera_programas                     TEXT,
-    cartera_proyectos                     TEXT,
-    texto_ag_pe                           VARCHAR(255),
-    programa_tipoproyecto                 VARCHAR(255),
-    ag_pe_unico                           VARCHAR(255),
-    ag_pe_u                               VARCHAR(255),
-    link_nueva_cartera                    TEXT,
-    link_mapas_conocimientos_diagramas_flujo_bpmn_2_0 TEXT,
-    asuntos_trabajo_proceso_ejecutable_di_ap TEXT,
-    ag_o_pe                               VARCHAR(255)
+    id_mapa_conocimiento                  SERIAL          PRIMARY KEY, -- id_mapa_conocimiento
+    nombre_proceso                         VARCHAR(255),   -- Nombre proceso
+    vista_proceso                          TEXT,           -- Vista proceso
+    responsable_proceso                    VARCHAR(255),   -- Responsable
+    prioridad_proceso                      VARCHAR(100),   -- Prioridad
+    estado_documentacion_proceso           VARCHAR(100),   -- Estado de documentación
+    cronograma_inicio_proceso              DATE,           -- Cronograma - Start
+    cronograma_fin_proceso                 DATE,           -- Cronograma - End
+    depende_de_proceso                     TEXT,           -- Depende de
+    duracion_proceso                       INT,            -- Duración (en días)
+    fecha_inicio_proceso                   DATE,           -- Fecha inicio
+    fecha_finalizacion_proceso             DATE,           -- Fecha finalización
+    esfuerzo_planificado_proceso           INT,            -- Esfuerzo planificado (en horas)
+    esfuerzo_real_proceso                  INT,            -- Esfuerzo real (en horas)
+    presupuesto_proceso                    NUMERIC(15,2),  -- Presupuesto
+    tipo_proyecto_proceso                  VARCHAR(100),   -- Tipo proyecto
+    cartera_programas_proceso              TEXT,           -- Cartera programas
+    cartera_proyectos_proceso              TEXT,           -- Cartera proyectos
+    texto_ag_o_pe                          TEXT,           -- Texto AG O PE
+    programa_tipo_proyecto                 VARCHAR(255),   -- Programa_tipoproyecto
+    ag_o_pe_unico                          TEXT,           -- AG O PE Unico
+    ag_pe_tipo_proyecto                    TEXT,           -- AG_PE_tipoproyecto
+    ag_o_pe_u                              TEXT,           -- AG O PE U
+    link_nueva_cartera                     TEXT,           -- link to Nueva cartera
+    link_mapas_conocimientos_bpmn          TEXT,           -- link to Mapas de Conocimientos - Diagramas de flujo _BPMN 2.0
+    asuntos_trabajo_gestion_proceso        TEXT,           -- Asuntos de Trabajo del Asunto de Gestión ó Proceso Ejecutable_DI-AP-FO-007
+    ag_o_pe_id                             INT,            -- AG o PE
+    FOREIGN KEY (ag_o_pe_id) REFERENCES ag_o_pe(id_ag_o_pe) ON DELETE SET NULL
 );
+
 
 -- ===========================================================================
 -- Jerarquía geográfica 
