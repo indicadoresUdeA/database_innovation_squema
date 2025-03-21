@@ -1,15 +1,10 @@
--- Creación de la base de datos
-CREATE DATABASE innovacion;
-
--- Conexión a la base de datos
-\c innovacion;
 
 -- ==============================================================
 -- Enumerados para tipos específicos
 CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Intersexual');
 CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Género fluido', 'Agénero', 'Prefiero no decirlo', 'Otro');
 CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', 'Pasaporte (P)', 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)');
-CREATE TYPE ESTRATO_SOCIOECONOMICO_ENUM AS ENUM ('Estrato 1 (Bajo-bajo)', 'Estrato 2 (Bajo)', 'Estrato 3 (Medio-bajo)', 'Estrato 4 (Medio)', 'Estrato 5 (Medio-alto)', 'Estrato 6 (Alto)')
+CREATE TYPE ESTRATO_SOCIOECONOMICO_ENUM AS ENUM ('Estrato 1 (Bajo-bajo)', 'Estrato 2 (Bajo)', 'Estrato 3 (Medio-bajo)', 'Estrato 4 (Medio)', 'Estrato 5 (Medio-alto)', 'Estrato 6 (Alto)');
 
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural', 'Periurbana');
@@ -41,6 +36,50 @@ CREATE TYPE TIPO_ACTIVIDAD_ENUM AS ENUM ('Evento', 'Actividad', 'Curso');
 
 CREATE TYPE TIPO_OPERACION_LOG AS ENUM ('INSERT', 'UPDATE', 'DELETE');
 
+-- ===========================================================================
+-- Jerarquía geográfica 
+CREATE TABLE pais (
+    id_pais                   SERIAL PRIMARY KEY,
+    nombre_pais               VARCHAR(100) NOT NULL,
+    url_polygon_pais          TEXT,
+    codigo_pais               VARCHAR(50)
+);
+
+CREATE TABLE departamento (
+    id_departamento           SERIAL PRIMARY KEY,
+    url_polygon_departamento  TEXT,
+    nombre_departamento       VARCHAR(100) NOT NULL,
+    id_pais                   INT NOT NULL,
+
+    FOREIGN KEY (id_pais) REFERENCES pais (id_pais) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE region (
+    id_region                 SERIAL PRIMARY KEY,
+    url_polygon_region        TEXT,
+    nombre_region             VARCHAR(100) NOT NULL,
+    id_departamento           INT NOT NULL,
+
+    FOREIGN KEY (id_departamento) REFERENCES departamento (id_departamento) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE ciudad (
+    id_ciudad                 SERIAL PRIMARY KEY,
+    url_polygon_ciudad        TEXT,
+    nombre_ciudad             VARCHAR(100) NOT NULL,
+    id_region                 INT NOT NULL,
+    
+    FOREIGN KEY (id_region) REFERENCES region (id_region) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE direccion (
+    id_direccion              SERIAL PRIMARY KEY,
+    direccion_textual         VARCHAR(200) NOT NULL,
+    codigo_postal             CHAR(10),
+    id_ciudad                 INT NOT NULL,
+
+    FOREIGN KEY (id_ciudad) REFERENCES ciudad (id_ciudad) ON DELETE RESTRICT ON UPDATE CASCADE
+);
 
 -- ==============================================================
 -- Tabla persona
@@ -85,25 +124,26 @@ CREATE TABLE empresa (
     FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Tabla relacion_empresa_persona
-CREATE TABLE relacion_empresa_persona (
-    id_rel_empresa_persona   SERIAL PRIMARY KEY,
-    id_persona               INT NOT NULL,
-    id_empresa               INT NOT NULL,
-    rol                      ROL_ENUM NOT NULL,
-    id_cargo                 CARGO_ENUM,   
-
-    FOREIGN KEY (id_cargo) REFERENCES cargo (id_cargo) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 -- Tabla cargos
 CREATE TABLE cargo (
     id_cargo                SERIAL PRIMARY KEY,
     nombre_cargo            VARCHAR(100),
     responsabilidades       TEXT
 );
+
+-- Tabla relacion_empresa_persona
+CREATE TABLE relacion_empresa_persona (
+    id_rel_empresa_persona   SERIAL PRIMARY KEY,
+    id_persona               INT NOT NULL,
+    id_empresa               INT NOT NULL,
+    rol                      ROL_ENUM NOT NULL,
+    id_cargo                 INT,   
+
+    FOREIGN KEY (id_cargo) REFERENCES cargo (id_cargo) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 
 -- ==============================================================
 -- Tabla unidad_administrativa
@@ -114,7 +154,7 @@ CREATE TABLE unidad_administrativa (
     id_direccion                     INT,
     id_empresa                       INT NOT NULL,
 
-    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -138,7 +178,7 @@ CREATE TABLE unidad_academica (
     id_direccion                INT,
     id_empresa                  INT NOT NULL,
 
-    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -150,7 +190,7 @@ CREATE TABLE programa_academico (
     area_programa_academico     AREA_PROGRAMA_ACADEMICO_ENUM NOT NULL,
     id_unidad_academica         INT NOT NULL,
 
-    FOREIGN KEY (id_unidad_academica) REFERENCES id_unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_unidad_academica) REFERENCES unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Tabla grupo_investigacion
@@ -181,7 +221,6 @@ CREATE TABLE programa_academico_persona (
 CREATE TABLE profesion (
     id_profesion       SERIAL PRIMARY KEY,
     titulo_profesion   VARCHAR(100) NOT NULL,
-    nivel_profesion    NIVEL_PROFESION_ENUM NOT NULL, 
     area_profesion     VARCHAR(100),
     codigo_profesion   VARCHAR(50)
 );
@@ -267,7 +306,7 @@ CREATE TABLE programa (
     objetivo_secundario_programa        TEXT, -- Objetivo general del programa2
     link_mapas_conocimiento_programa    TEXT, -- link a Procesos mapas de conocimientos
     equipo_principal3                   TEXT, -- Euipo principal3
-    tipo_programa_texto                 TEXT, -- Tipo de programa texto
+    tipo_programa_texto                 TEXT -- Tipo de programa texto
 );
 
 
@@ -369,8 +408,8 @@ CREATE TABLE documentacion_procedimiento (
     id_asunto_trabajo                         INT,
     id_proyecto                               INT,
 
-    FOREIGN KEY (id_asunto_trabajo) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_de_trabajo) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_asunto_trabajo) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_trabajo) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE actividad_momento (
@@ -401,7 +440,14 @@ CREATE TABLE actividad_momento (
 
     FOREIGN KEY (id_persona_emprendedor) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_asunto_trabajo) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_de_trabajo) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_asunto_trabajo) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_trabajo) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE dimension_emprendimiento (
+    id_dimension_emprendimiento           SERIAL PRIMARY KEY,
+    nombre_dimension_emprendimiento       VARCHAR(255),
+    descripcion_dimension_emprendimiento  TEXT,
+    responsable_dimension_emprendimiento  VARCHAR(255)
 );
 
 CREATE TABLE subactividad_producto (
@@ -440,13 +486,6 @@ CREATE TABLE relacion_actividad_persona (
     FOREIGN KEY (id_subactividad) REFERENCES subactividad_producto (id_subactividad) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE dimension_emprendimiento (
-    id_dimension_emprendimiento           SERIAL PRIMARY KEY,
-    nombre_dimension_emprendimiento       VARCHAR(255),
-    descripcion_dimension_emprendimiento  TEXT,
-    responsable_dimension_emprendimiento  VARCHAR(255)
-);
-
 CREATE TABLE mapa_conocimiento_proceso (
     id_mapa_conocimiento                  SERIAL          PRIMARY KEY, -- id_mapa_conocimiento
     nombre_proceso                         VARCHAR(255),   -- Nombre proceso
@@ -478,52 +517,6 @@ CREATE TABLE mapa_conocimiento_proceso (
     FOREIGN KEY (ag_o_pe_id) REFERENCES ag_o_pe(id_ag_o_pe) ON DELETE SET NULL
 );
 
-
--- ===========================================================================
--- Jerarquía geográfica 
-CREATE TABLE pais (
-    id_pais                   SERIAL PRIMARY KEY,
-    nombre_pais               VARCHAR(100) NOT NULL,
-    url_polygon_pais          TEXT,
-    codigo_pais               VARCHAR(50)
-);
-
-CREATE TABLE departamento (
-    id_departamento           SERIAL PRIMARY KEY,
-    url_polygon_departamento  TEXT,
-    nombre_departamento       VARCHAR(100) NOT NULL,
-    id_pais                   INT NOT NULL,
-
-    FOREIGN KEY (id_pais) REFERENCES pais (id_pais) ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
-CREATE TABLE region (
-    id_region                 SERIAL PRIMARY KEY,
-    url_polygon_region        TEXT,
-    nombre_region             VARCHAR(100) NOT NULL,
-    id_departamento           INT NOT NULL,
-
-    FOREIGN KEY (id_departamento) REFERENCES departamento (id_departamento) ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
-CREATE TABLE ciudad (
-    id_ciudad                 SERIAL PRIMARY KEY,
-    url_polygon_ciudad        TEXT,
-    nombre_ciudad             VARCHAR(100) NOT NULL,
-    id_region                 INT NOT NULL,
-    
-    FOREIGN KEY (id_region) REFERENCES region (id_region) ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
-CREATE TABLE direccion (
-    id_direccion              SERIAL PRIMARY KEY,
-    direccion_textual         VARCHAR(200) NOT NULL,
-    codigo_postal             CHAR(10),
-    id_ciudad                 INT NOT NULL,
-
-    FOREIGN KEY (id_ciudad) REFERENCES ciudad (id_ciudad) ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
 -- ==============================================================
 -- Tabla de logs
 CREATE TABLE log_cambios (
@@ -533,7 +526,7 @@ CREATE TABLE log_cambios (
     id_registro_afectado    INT NOT NULL,         
     datos_anteriores        JSONB,                -- Datos antes del cambio (solo para UPDATE/DELETE)
     datos_nuevos            JSONB,                -- Datos después del cambio (solo para INSERT/UPDATE)
-    id_usuario_modificacion VARCHAR(100),         
+    id_usuario_modificacion INT,         
     fecha_cambio            TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
 
     FOREIGN KEY (id_usuario_modificacion) REFERENCES persona (id_persona) ON DELETE RESTRICT ON UPDATE CASCADE
