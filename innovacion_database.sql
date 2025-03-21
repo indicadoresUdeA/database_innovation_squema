@@ -51,8 +51,6 @@ CREATE TABLE persona (
     fecha_nacimiento_persona     DATE NOT NULL,
     es_emprendedor               BOOLEAN DEFAULT FALSE,   
     foto_persona_url             TEXT,              
-    fecha_creacion_registro      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_ultima_actualizacion   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Tabla empresa
@@ -71,8 +69,7 @@ CREATE TABLE empresa (
     es_emprendimiento                 BOOLEAN DEFAULT FALSE,
     pertenece_parque                  BOOLEAN DEFAULT FALSE,
     fecha_fundacion_empresa           DATE,
-    fecha_creacion_empresa            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ultima_actualizacion              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_creacion_empresa            DATE,
     id_direccion                      INT,
 
     FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
@@ -95,7 +92,8 @@ CREATE TABLE relacion_empresa_persona (
 CREATE TABLE cargo (
     id_cargo                SERIAL PRIMARY KEY,
     nombre_cargo            VARCHAR(100),
-    responsabilidades       TEXT
+    responsabilidades       TEXT,
+    correo_empresa_asociada VARCHAR(50)
 );
 
 -- ==============================================================
@@ -261,7 +259,7 @@ CREATE TABLE proyecto (
 );
 
 -- Tabla proceso de financiacion
-CREATE TABLE proceso_financiacion (
+CREATE TABLE proceso_financiacion_proyecto (
     id_proceso_financiacion         SERIAL PRIMARY KEY,
     id_proyecto                     INT NOT NULL,
     tipo_aporte                     TIPO_APORTE_ENUM
@@ -292,39 +290,36 @@ CREATE TABLE seguimiento_proyecto (
 
 
     FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE
-               
 );
 
-CREATE TABLE mapa_conocimiento_proceso (
-    id_mapa_conocimiento                  SERIAL PRIMARY KEY,
-    estado_mapa
-    url_mapa
-    nombre_proceso                        VARCHAR(255),
-    vista_proceso                         VARCHAR(255),
-    responsable_proceso                   VARCHAR(255),
-    prioridad_proceso                     VARCHAR(100),
-    estado_documentacion                  VARCHAR(100),
-    cronograma_start                      DATE,
-    cronograma_end                        DATE,
-    depende_de                            VARCHAR(255),
-    duracion_proceso                      INTERVAL,
-    fecha_inicio_proceso                  DATE,
-    fecha_finalizacion_proceso            DATE,
-    esfuerzo_planificado                  DECIMAL,
-    esfuerzo_real                         DECIMAL,
-    presupuesto_proceso                   DECIMAL,
-    tipo_proyecto                         VARCHAR(100),
-    cartera_programas                     TEXT,
-    cartera_proyectos                     TEXT,
-    texto_ag_pe                           VARCHAR(255),
-    programa_tipoproyecto                 VARCHAR(255),
-    ag_pe_unico                           VARCHAR(255),
-    ag_pe_u                               VARCHAR(255),
-    link_nueva_cartera                    TEXT,
-    link_mapas_conocimientos_diagramas_flujo_bpmn_2_0 TEXT,
-    asuntos_trabajo_proceso_ejecutable_di_ap TEXT,
-    ag_o_pe                               VARCHAR(255)
+CREATE TABLE documentacion_procedimiento (
+    id_documentacion_proceso    SERIAL PRIMARY KEY,
+    id_asunto_trabajo           INT,
+    id_proyecto                 INT,
+    url_procedimiento           TEXT,
+    url_instructivo             TEXT,
+    url_metodologia             TEXT,
 );
+
+CREATE TABLE actividad ();
+
+CREATE TABLE subactividad ();
+
+CREATE TABLE relacion_actividad_persona ();
+
+CREATE TABLE mapa_conocimiento_proceso (
+    id_mapa_conocimiento            SERIAL PRIMARY KEY,
+    estado_mapa                     ESTADO_MAPA_ENUM NOT NULL,
+    url_mapa                        TEXT,
+    nombre_proceso                  VARCHAR(255),
+    id_documentacion_proceso        INT
+);
+
+CREATE TABLE asunto_trabajo ();
+
+CREATE TABLE proceso_ejecutable();
+
+CREATE TABLE asunto_trabajo ();
 
 -- ===========================================================================
 -- Jerarquía geográfica 
