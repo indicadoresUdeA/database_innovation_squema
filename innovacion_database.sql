@@ -137,11 +137,9 @@ CREATE TABLE empresa (
     pertenece_parque                  BOOLEAN DEFAULT FALSE,
     fecha_fundacion_empresa           DATE,
     fecha_creacion_empresa            TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ultima_actualizacion              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    id_direccion                      INT,
-
-    FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
+    ultima_actualizacion              TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- Tabla relacion_empresa_persona
 CREATE TABLE relacion_empresa_persona (
@@ -156,16 +154,27 @@ CREATE TABLE relacion_empresa_persona (
 
 
 -- ==============================================================
+-- Tabla sede_campus
+CREATE TABLE sede_campus (
+    id_sede_campus         SERIAL PRIMARY KEY,
+    nombre_sede_campus     VARCHAR(100) NOT NULL,
+    tipo_ubicacion         TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
+    id_empresa             INT NOT NULL,
+    id_direccion           INT NOT NULL,
+
+    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
 -- Tabla unidad_administrativa
 CREATE TABLE unidad_administrativa (
     id_unidad_administrativa         SERIAL PRIMARY KEY,
     nombre_unidad_administrativa     VARCHAR(100) NOT NULL,
     tipo_ubicacion                   TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
-    id_direccion                     INT,
-    id_empresa                       INT NOT NULL,
+    id_sede_campus                   INT,
 
-    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_sede_campus) REFERENCES sede_campus (id_sede_campus) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -185,11 +194,9 @@ CREATE TABLE unidad_academica (
     tipo_unidad_academica       TIPO_UNIDAD_ACADEMICA_ENUM NOT NULL,
     nombre_unidad_academica     VARCHAR(100) NOT NULL,
     tipo_ubicacion              TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
-    id_direccion                INT,
-    id_empresa                  INT NOT NULL,
+    id_sede_campus              INT,
 
-    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_sede_campus) REFERENCES sede_campus (id_sede_campus) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Tabla programa_academico
@@ -210,6 +217,32 @@ CREATE TABLE grupo_investigacion (
     id_unidad_academica          INT NOT NULL,
 
     FOREIGN KEY (id_unidad_academica) REFERENCES unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabla programa_academico_persona
+CREATE TABLE subunidad_administrativa_persona (
+    id_subunidad_administrativa_persona   SERIAL PRIMARY KEY,
+    id_subunidad_administrativa           INT NOT NULL,
+    fecha_inicio                          DATE,
+    fecha_finalizacion                    DATE,
+    id_persona                            INT NOT NULL,
+
+
+    FOREIGN KEY (id_subunidad_administrativa) REFERENCES subunidad_administrativa (id_subunidad_administrativa) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabla programa_academico_persona
+CREATE TABLE grupo_investigacion_persona (
+    id_grupo_investigacion_persona  SERIAL PRIMARY KEY,
+    id_grupo_investigacion         INT NOT NULL,
+    fecha_inicio                   DATE,
+    fecha_finalizacion             DATE,
+    id_persona                     INT NOT NULL,
+
+
+    FOREIGN KEY (id_grupo_investigacion) REFERENCES grupo_investigacion (id_grupo_investigacion) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Tabla programa_academico_persona
@@ -247,23 +280,17 @@ CREATE TABLE profesion_persona (
 );
 
 -- Tabla red_social_persona
-CREATE TABLE red_social_persona (
-    id_red_social_persona  SERIAL PRIMARY KEY,
+CREATE TABLE red_social_persona_empresa (
+    id_red_social_persona_empresa  SERIAL PRIMARY KEY,
     nombre_plataforma      VARCHAR(50) NOT NULL,
     url_perfil             TEXT,
-    id_persona             INT NOT NULL,
+    id_persona             INT,
+    id_empresa             INT,
+
     FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- Tabla red_social_empresa
-CREATE TABLE red_social_empresa (
-    id_red_social_empresa  SERIAL PRIMARY KEY,
-    nombre_plataforma      VARCHAR(50) NOT NULL,
-    url_perfil             TEXT,
-    id_empresa             INT NOT NULL,
-
     FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
 
 -- Tabla emprendimiento
 CREATE TABLE emprendimiento (
@@ -423,10 +450,13 @@ CREATE TABLE asunto_de_trabajo_tipo_emprendimiento (
 );
 
 
-CREATE TABLE documentacion_procedimiento (
-    id_documentacion_procedimiento            SERIAL PRIMARY KEY,
-    id_asunto_trabajo                         INT,
-    id_proyecto                               INT,
+CREATE TABLE etapa_asunto_trabajo_proyecto_actividad (
+    id_etapa_asunto_trabajo_proyecto_actividad               SERIAL PRIMARY KEY,
+    nombre_etapa_asunto_trabajo_proyecto_actividad           VARCHAR(255),
+    descripcion_etapa_asunto_trabajo_proyecto_actividad      VARCHAR(255),
+    responsable_etapa_asunto_trabajo_proyecto_actividad      VARCHAR(255),
+    id_asunto_trabajo                                        INT,
+    id_proyecto                                              INT,
 
     FOREIGN KEY (id_asunto_trabajo) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_trabajo) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE
@@ -544,10 +574,12 @@ CREATE TABLE log_cambios (
     id_registro_afectado    INT NOT NULL,         
     datos_anteriores        JSONB,                -- Datos antes del cambio (solo para UPDATE/DELETE)
     datos_nuevos            JSONB,                -- Datos después del cambio (solo para INSERT/UPDATE)
-    id_usuario_modificacion INT,         
     fecha_cambio            TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+    id_persona              INT,  
+    id_empresa              INT,  
 
-    FOREIGN KEY (id_usuario_modificacion) REFERENCES persona (id_persona) ON DELETE RESTRICT ON UPDATE CASCADE
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE RESTRICT ON UPDATE CASCADE
 
 );
 
