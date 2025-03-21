@@ -211,7 +211,7 @@ CREATE TABLE emprendimiento (
 );
 
 -- ===========================================================================
-
+-- Tabla programa
 CREATE TABLE programa (
     id_programa                     SERIAL PRIMARY KEY,
     nombre_programa                 VARCHAR(255) NOT NULL,
@@ -231,6 +231,7 @@ CREATE TABLE programa (
     id_mapa_proceso                 TEXT
 );
 
+-- Tabla proyecto
 CREATE TABLE proyecto (
     id_proyecto                   SERIAL PRIMARY KEY,
     id_programa                   INT,
@@ -239,8 +240,6 @@ CREATE TABLE proyecto (
     estado_proyecto               ESTADO_PROYECTO_ENUM,
     propuesta_proyecto            TEXT,
     prioridad_proyecto            PRIORIDAD_PROYECTO_ENUM,
-    etapa_proyecto                ETAPA_PROYECTO_ENUM,
-    porcentaje_realizacion_proyecto DECIMAL(5, 2),
     fecha_inicio_proyecto         DATE,
     fecha_finalizacion_proyecto   DATE,
     numero_contrato               VARCHAR(50),
@@ -261,6 +260,7 @@ CREATE TABLE proyecto (
     FOREIGN KEY (id_responsable_proyecto) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
 );
 
+-- Tabla proceso de financiacion
 CREATE TABLE proceso_financiacion (
     id_proceso_financiacion         SERIAL PRIMARY KEY,
     id_proyecto                     INT NOT NULL,
@@ -281,6 +281,13 @@ CREATE TABLE proceso_financiacion (
     FOREIGN KEY (id_contratante) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (id_persona_encargada) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE seguimiento_proyecto (
+    id_seguimiento_proyecto         SERIAL PRIMARY KEY,
+    id_proyecto                     INT
+    porcentaje_realizacion_proyecto DECIMAL(5, 2),
+    etapa_proyecto                  ETAPA_PROYECTO_ENUM,                  
 );
 
 -- ===========================================================================
@@ -332,13 +339,16 @@ CREATE TABLE direccion (
 -- Tabla de logs
 CREATE TABLE log_cambios (
     id_log                  SERIAL PRIMARY KEY,
-    nombre_tabla            VARCHAR(100) NOT NULL, -- Nombre de la tabla afectada
-    tipo_operacion          VARCHAR(10) NOT NULL,  -- 'INSERT', 'UPDATE', 'DELETE' Hacer ENUM
+    nombre_tabla            VARCHAR(100) NOT NULL, 
+    tipo_operacion          TIPO_OPERACION_LOG NOT NULL,  -- 'INSERT', 'UPDATE', 'DELETE' Hacer ENUM
     id_registro_afectado    INT NOT NULL,         
     datos_anteriores        JSONB,                -- Datos antes del cambio (solo para UPDATE/DELETE)
     datos_nuevos            JSONB,                -- Datos después del cambio (solo para INSERT/UPDATE)
-    usuario_modificacion    VARCHAR(100),         
+    id_usuario_modificacion VARCHAR(100),         
     fecha_cambio            TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+
+    FOREIGN KEY (id_usuario_modificacion) REFERENCES persona (id_persona) ON DELETE RESTRICT ON UPDATE CASCADE
+
 );
 
 -- ==============================================================
