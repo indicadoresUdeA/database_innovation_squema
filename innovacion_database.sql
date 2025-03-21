@@ -5,6 +5,7 @@ CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Intersexual');
 CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Género fluido', 'Agénero', 'Prefiero no decirlo', 'Otro');
 CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', 'Pasaporte (P)', 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)');
 CREATE TYPE ESTRATO_SOCIOECONOMICO_ENUM AS ENUM ('Estrato 1 (Bajo-bajo)', 'Estrato 2 (Bajo)', 'Estrato 3 (Medio-bajo)', 'Estrato 4 (Medio)', 'Estrato 5 (Medio-alto)', 'Estrato 6 (Alto)');
+CREATE TYPE ETNIA_EMPRENDEDOR_ENUM AS ENUM ('Blanco', 'Mestizo', 'Afrocolombiano', 'Indígena', 'Raizal', 'Palenquero', 'Rom o Gitano', 'Prefiero no decir', 'Ninguno de los anteriores');
 
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural', 'Periurbana');
@@ -149,7 +150,6 @@ CREATE TABLE relacion_empresa_persona (
     id_empresa               INT NOT NULL,
     rol                      ROL_ENUM NOT NULL,
 
-    FOREIGN KEY (id_cargo) REFERENCES cargo (id_cargo) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -280,6 +280,16 @@ CREATE TABLE emprendimiento (
     realiza_comercio_internacional   BOOLEAN,
 
     FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabla emprendedor
+CREATE TABLE emprendedor (
+    id_emprendedor                    SERIAL PRIMARY KEY,
+    discapacidad_emprendedor          BOOLEAN, 
+    etnia_emprendedor                ETNIA_EMPRENDEDOR_ENUM NOT NULL,
+    id_persona                        INT,
+
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- ===========================================================================
@@ -445,12 +455,10 @@ CREATE TABLE actividad_momento (
     observaciones_actividad                TEXT,
     fecha_registro_actividad_producto      TIMESTAMP,
     id_persona_emprendedor                 INT,
-    id_proyecto                            INT,
-    id_asunto_trabajo                      INT,
+    id_documentacion_procedimiento         INT,
 
     FOREIGN KEY (id_persona_emprendedor) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
-    FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_asunto_trabajo) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_trabajo) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_documentacion_procedimiento) REFERENCES documentacion_procedimiento (id_documentacion_procedimiento) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE dimension_emprendimiento (
@@ -522,9 +530,9 @@ CREATE TABLE mapa_conocimiento_proceso (
     ag_o_pe_u                              TEXT,           -- AG O PE U
     link_nueva_cartera                     TEXT,           -- link to Nueva cartera
     link_mapas_conocimientos_bpmn          TEXT,           -- link to Mapas de Conocimientos - Diagramas de flujo _BPMN 2.0
-    asuntos_trabajo_gestion_proceso        TEXT,           -- Asuntos de Trabajo del Asunto de Gestión ó Proceso Ejecutable_DI-AP-FO-007
-    ag_o_pe_id                             INT,            -- AG o PE
-    FOREIGN KEY (ag_o_pe_id) REFERENCES ag_o_pe(id_ag_o_pe) ON DELETE SET NULL
+    asuntos_trabajo_gestion_proceso        TEXT,           -- Asuntos de Trabajo del Asunto de Gestión ó Proceso Ejecutable_DI-AP-FO-007  
+    id_asunto_trabajo                      INT,         
+    FOREIGN KEY (id_asunto_trabajo ) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_trabajo) ON DELETE SET NULL
 );
 
 -- ==============================================================
