@@ -18,7 +18,7 @@ CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', '
 CREATE TYPE ROL_ENUM AS ENUM ('Empleado', 'Gerente', 'Socio', 'Fundador', 'Inversionista');
 CREATE TYPE MAGNITUD_EMPRESA_ENUM AS ENUM ('Grande', 'Mediana', 'Pequeña');
 
-CREATE TYPE TIPO_VINCULO_UNIDAD_IE_ENUM AS ENUM ('Facultad', 'Instituto', 'Escuela', 'Centro de Investigación');
+CREATE TYPE TIPO_UNIDAD_ACADEMICA_ENUM AS ENUM ( ' Facultad ' , ' Escuela ' , ' Instituto ' , ' Corporación ' );
 CREATE TYPE TIPO_UBICACION_UNIDAD_IE_ENUM AS ENUM ('Campus', 'Sede', 'Sede única');
 CREATE TYPE NIVEL_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Técnica profesional', 'Tecnológico', 'Profesional', 'Especialización', 'Maestría', 'Doctorado');
 CREATE TYPE AREA_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Ingeniería', 'Ciencias Sociales', 'Ciencias Naturales', 'Artes', 'Humanidades');
@@ -103,25 +103,40 @@ CREATE TABLE cargo (
 );
 
 -- ==============================================================
--- Tabla unidad_ie (Unidad de Institución Educativa)
-CREATE TABLE unidad_ie (
-    id_unidad_ie            SERIAL PRIMARY KEY,
-    tipo_vinculo_ie         TIPO_VINCULO_UNIDAD_IE_ENUM NOT NULL,
-    nombre_unidad           VARCHAR(100) NOT NULL,
-    tipo_ubicacion          TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
-    id_direccion
-    id_empresa              INT NOT NULL,
+-- Tabla unidad_administrativa
+CREATE TABLE unidad_administrativa (
+    id_unidad_administrativa         SERIAL PRIMARY KEY,
+    nombre_unidad_administrativa     VARCHAR(100) NOT NULL,
+    tipo_ubicacion                   TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
+    id_direccion                     INT,
+    id_empresa                       INT NOT NULL,
 
     FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
 
 -- Tabla subunidad_administrativa
 CREATE TABLE subunidad_administrativa (
-    id_subunidad_administrativa  SERIAL PRIMARY KEY,
-    nombre_subunidad             VARCHAR(100) NOT NULL,
-    id_unidad_ie                 INT NOT NULL,
+    id_subunidad_administrativa      SERIAL PRIMARY KEY,
+    nombre_subunidad                 VARCHAR(100) NOT NULL,
+    id_unidad_administrativa         INT NOT NULL,
 
-    FOREIGN KEY (id_unidad_ie) REFERENCES unidad_ie (id_unidad_ie) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_unidad_administrativa) REFERENCES unidad_administrativa (id_unidad_administrativa) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+-- Tabla unidad_academica
+CREATE TABLE unidad_academica (
+    id_unidad_academica         SERIAL PRIMARY KEY,
+    tipo_unidad_academica       TIPO_UNIDAD_ACADEMICA_ENUM NOT NULL,
+    nombre_unidad_academica     VARCHAR(100) NOT NULL,
+    tipo_ubicacion              TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
+    id_direccion                INT,
+    id_empresa                  INT NOT NULL,
+
+    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Tabla programa_academico
@@ -130,18 +145,18 @@ CREATE TABLE programa_academico (
     titulo_programa_academico   VARCHAR(100) NOT NULL,
     nivel_programa_academico    NIVEL_PROGRAMA_ACADEMICO_ENUM NOT NULL,
     area_programa_academico     AREA_PROGRAMA_ACADEMICO_ENUM NOT NULL,
-    id_unidad_ie                INT NOT NULL,
+    id_unidad_academica         INT NOT NULL,
 
-    FOREIGN KEY (id_unidad_ie) REFERENCES unidad_ie (id_unidad_ie) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_unidad_academica) REFERENCES id_unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Tabla grupo_investigacion
 CREATE TABLE grupo_investigacion (
     id_grupo_investigacion       SERIAL PRIMARY KEY,
     nombre_grupo_investigacion   VARCHAR(100) NOT NULL,
-    id_unidad_ie                 INT NOT NULL,
+    id_unidad_academica          INT NOT NULL,
 
-    FOREIGN KEY (id_unidad_ie) REFERENCES unidad_ie (id_unidad_ie) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_unidad_academica) REFERENCES unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Tabla programa_academico_persona
