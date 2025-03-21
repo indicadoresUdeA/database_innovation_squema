@@ -146,7 +146,8 @@ CREATE TABLE empresa (
 CREATE TABLE cargo (
     id_cargo                SERIAL PRIMARY KEY,
     nombre_cargo            VARCHAR(100),
-    responsabilidades       TEXT
+    responsabilidades       TEXT,
+    correo_cargo            VARCHAR(50)
 );
 
 -- Tabla relacion_empresa_persona
