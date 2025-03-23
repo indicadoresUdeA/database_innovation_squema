@@ -377,6 +377,7 @@ CREATE TABLE programa (
 -- Tabla proyecto
 CREATE TABLE proyecto (
     id_proyecto                        SERIAL PRIMARY KEY, -- id_proyecto
+    nombre_proyecto                    VARCHAR(100),   -- nombre proyecto
     estado_proyecto                    VARCHAR(100),   -- estado_proyecto
     prioridad_proyecto                  VARCHAR(100),   -- prioridad
     etapa_proyecto                      VARCHAR(100),   -- etapa
