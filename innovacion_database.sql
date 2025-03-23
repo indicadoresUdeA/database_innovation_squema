@@ -11,12 +11,12 @@ CREATE TYPE ESTADO_CIVIL_EMPRENDEDOR_ENUM AS ENUM ('Soltero', 'Casado', 'Unión 
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural', 'Periurbana');
 CREATE TYPE MACROSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
-CREATE TYPE SubSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
+CREATE TYPE SubSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Agricultura', 'Ganadería', 'Alimentos y bebidas', 'Textiles, confecciones, cuero y calzado', 'Productos químicos y farmacéuticos', 'Plásticos y caucho', 'Minerales no metálicos', 'Metalmecánica', 'Automotriz', 'Electrónica y electrodomésticos',);
 CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura', 'Institución educativa');
 CREATE TYPE ROL_ENUM AS ENUM ('Empleado', 'Gerente', 'Socio', 'Fundador', 'Inversionista');
 CREATE TYPE MAGNITUD_EMPRESA_ENUM AS ENUM ('Grande', 'Mediana', 'Pequeña');
 
-CREATE TYPE TIPO_UNIDAD_ACADEMICA_ENUM AS ENUM ( ' Facultad ' , ' Escuela ' , ' Instituto ' , ' Corporación ' );
+CREATE TYPE TIPO_UNIDAD_ACADEMICA_ENUM AS ENUM ( 'Facultad' , 'Escuela' , 'Instituto' , 'Corporación' );
 CREATE TYPE TIPO_UBICACION_UNIDAD_IE_ENUM AS ENUM ('Campus', 'Sede', 'Sede única');
 CREATE TYPE NIVEL_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Técnica profesional', 'Tecnológico', 'Profesional', 'Especialización', 'Maestría', 'Doctorado');
 CREATE TYPE AREA_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Ingeniería', 'Ciencias Sociales', 'Ciencias Naturales', 'Artes', 'Humanidades');
