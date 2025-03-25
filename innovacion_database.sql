@@ -171,7 +171,6 @@ CREATE TABLE sede_campus (
 CREATE TABLE unidad_administrativa (
     id_unidad_administrativa         SERIAL PRIMARY KEY,
     nombre_unidad_administrativa     VARCHAR(100) NOT NULL,
-    tipo_ubicacion                   TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
     id_sede_campus                   INT,
 
     FOREIGN KEY (id_sede_campus) REFERENCES sede_campus (id_sede_campus) ON DELETE CASCADE ON UPDATE CASCADE
@@ -193,7 +192,6 @@ CREATE TABLE unidad_academica (
     id_unidad_academica         SERIAL PRIMARY KEY,
     tipo_unidad_academica       TIPO_UNIDAD_ACADEMICA_ENUM NOT NULL,
     nombre_unidad_academica     VARCHAR(100) NOT NULL,
-    tipo_ubicacion              TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
     id_sede_campus              INT,
 
     FOREIGN KEY (id_sede_campus) REFERENCES sede_campus (id_sede_campus) ON DELETE CASCADE ON UPDATE CASCADE
