@@ -1,20 +1,23 @@
 
 -- ==============================================================
 -- Enumerados para tipos específicos
+
 CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Intersexual');
 CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Género fluido', 'Agénero', 'Prefiero no decirlo', 'Otro');
 CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', 'Pasaporte (P)', 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)');
 CREATE TYPE ESTRATO_SOCIOECONOMICO_ENUM AS ENUM ('Estrato 1 (Bajo-bajo)', 'Estrato 2 (Bajo)', 'Estrato 3 (Medio-bajo)', 'Estrato 4 (Medio)', 'Estrato 5 (Medio-alto)', 'Estrato 6 (Alto)');
 CREATE TYPE ETNIA_EMPRENDEDOR_ENUM AS ENUM ('Blanco', 'Mestizo', 'Afrocolombiano', 'Indígena', 'Raizal', 'Palenquero', 'Rom o Gitano', 'Prefiero no decir', 'Ninguno de los anteriores');
+CREATE TYPE ESTADO_CIVIL_EMPRENDEDOR_ENUM AS ENUM ('Soltero', 'Casado', 'Unión libre', 'Separado', 'Divorciado', 'Viudo', 'Otro');
 
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural', 'Periurbana');
-CREATE TYPE SECTOR_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
+CREATE TYPE MACROSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
+CREATE TYPE SUBSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Agricultura', 'Ganadería', 'Alimentos y bebidas', 'Textiles, confecciones, cuero y calzado', 'Productos químicos y farmacéuticos', 'Plásticos y caucho', 'Minerales no metálicos', 'Metalmecánica', 'Automotriz', 'Electrónica y electrodomésticos',);
 CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura', 'Institución educativa');
 CREATE TYPE ROL_ENUM AS ENUM ('Empleado', 'Gerente', 'Socio', 'Fundador', 'Inversionista');
 CREATE TYPE MAGNITUD_EMPRESA_ENUM AS ENUM ('Grande', 'Mediana', 'Pequeña');
 
-CREATE TYPE TIPO_UNIDAD_ACADEMICA_ENUM AS ENUM ( ' Facultad ' , ' Escuela ' , ' Instituto ' , ' Corporación ' );
+CREATE TYPE TIPO_UNIDAD_ACADEMICA_ENUM AS ENUM ( 'Facultad' , 'Escuela' , 'Instituto' , 'Corporación' );
 CREATE TYPE TIPO_UBICACION_UNIDAD_IE_ENUM AS ENUM ('Campus', 'Sede', 'Sede única');
 CREATE TYPE NIVEL_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Técnica profesional', 'Tecnológico', 'Profesional', 'Especialización', 'Maestría', 'Doctorado');
 CREATE TYPE AREA_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Ingeniería', 'Ciencias Sociales', 'Ciencias Naturales', 'Artes', 'Humanidades');
@@ -126,8 +129,8 @@ CREATE TABLE empresa (
     nombre_empresa                    VARCHAR(100) NOT NULL UNIQUE,
     categoria_empresa                 CATEGORIA_EMPRESA_ENUM NOT NULL,
     zona_empresa                      ZONA_EMPRESA_ENUM NOT NULL,
-    sector_empresa                    SECTOR_EMPRESA_ENUM NOT NULL,
     tipo_empresa                      TIPO_EMPRESA_ENUM NOT NULL,
+    telefono_empresa                  VARCHAR(20),      
     magnitud_empresa                  MAGNITUD_EMPRESA_ENUM,  
     naturaleza_juridica               VARCHAR(100),
     telefono_empresa                  VARCHAR(20),
@@ -171,7 +174,6 @@ CREATE TABLE sede_campus (
 CREATE TABLE unidad_administrativa (
     id_unidad_administrativa         SERIAL PRIMARY KEY,
     nombre_unidad_administrativa     VARCHAR(100) NOT NULL,
-    tipo_ubicacion                   TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
     id_sede_campus                   INT,
 
     FOREIGN KEY (id_sede_campus) REFERENCES sede_campus (id_sede_campus) ON DELETE CASCADE ON UPDATE CASCADE
@@ -183,7 +185,7 @@ CREATE TABLE subunidad_administrativa (
     id_subunidad_administrativa      SERIAL PRIMARY KEY,
     nombre_subunidad                 VARCHAR(100) NOT NULL,
     id_unidad_administrativa         INT NOT NULL,
-
+  
     FOREIGN KEY (id_unidad_administrativa) REFERENCES unidad_administrativa (id_unidad_administrativa) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -193,7 +195,6 @@ CREATE TABLE unidad_academica (
     id_unidad_academica         SERIAL PRIMARY KEY,
     tipo_unidad_academica       TIPO_UNIDAD_ACADEMICA_ENUM NOT NULL,
     nombre_unidad_academica     VARCHAR(100) NOT NULL,
-    tipo_ubicacion              TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
     id_sede_campus              INT,
 
     FOREIGN KEY (id_sede_campus) REFERENCES sede_campus (id_sede_campus) ON DELETE CASCADE ON UPDATE CASCADE
@@ -219,7 +220,7 @@ CREATE TABLE grupo_investigacion (
     FOREIGN KEY (id_unidad_academica) REFERENCES unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Tabla programa_academico_persona
+-- Tabla subunidad_administrativa_persona
 CREATE TABLE subunidad_administrativa_persona (
     id_subunidad_administrativa_persona   SERIAL PRIMARY KEY,
     id_subunidad_administrativa           INT NOT NULL,
@@ -228,11 +229,24 @@ CREATE TABLE subunidad_administrativa_persona (
     id_persona                            INT NOT NULL,
 
 
+    FOREIGN KEY (id_unidad_academica) REFERENCES unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
+-- Tabla subunidad_administrativa_persona
+CREATE TABLE subunidad_administrativa_persona (
+    id_subunidad_administrativa_persona   SERIAL PRIMARY KEY,
+    id_subunidad_administrativa           INT NOT NULL,
+    fecha_inicio                          DATE,
+    fecha_finalizacion                    DATE,
+    id_persona                            INT NOT NULL,
+
     FOREIGN KEY (id_subunidad_administrativa) REFERENCES subunidad_administrativa (id_subunidad_administrativa) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Tabla programa_academico_persona
+
+-- Tabla grupo_investigacion_persona
 CREATE TABLE grupo_investigacion_persona (
     id_grupo_investigacion_persona  SERIAL PRIMARY KEY,
     id_grupo_investigacion         INT NOT NULL,
@@ -279,7 +293,8 @@ CREATE TABLE profesion_persona (
     FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Tabla red_social_persona
+
+-- Tabla red_social_persona_empresa
 CREATE TABLE red_social_persona_empresa (
     id_red_social_persona_empresa  SERIAL PRIMARY KEY,
     nombre_plataforma      VARCHAR(50) NOT NULL,
@@ -294,17 +309,30 @@ CREATE TABLE red_social_persona_empresa (
 
 -- Tabla emprendimiento
 CREATE TABLE emprendimiento (
-    id_emprendimiento                SERIAL PRIMARY KEY,
-    id_empresa                       INT,
-    surgimiento_emprendimiento       VARCHAR(255), 
-    estado_desarrollo_emprendimiento ESTADO_DESARROLLO_EMPREN_ENUM NOT NULL,
-    cantidad_clientes_promedio_mes   INT,
-    tiene_camara_comercio            BOOLEAN DEFAULT FALSE,      
-    genera_ingresos                  BOOLEAN,     
-    genera_empleo                    BOOLEAN,
-    tipo_empleo                      TIPO_EMPLEO_ENUM,
-    cantidad_empleados               INT,
-    realiza_comercio_internacional   BOOLEAN,
+    id_emprendimiento                  SERIAL PRIMARY KEY,
+    id_empresa                         INT,
+    surgimiento_emprendimiento         VARCHAR(255), 
+    idea_negocio                       TEXT,
+    estado_desarrollo_emprendimiento   ESTADO_DESARROLLO_EMPREN_ENUM NOT NULL,
+    naturaleza_juridica                VARCHAR(100),
+    magnitud_empresa                   MAGNITUD_EMPRESA_ENUM,  
+    macrosector_emprendimiento         MACROSECTOR_EMPRENDIMIENTO_ENUM,
+    subsector_emprendimiento           SUBSECTOR_EMPRENDIMIENTO_ENUM,
+    cantidad_empleados                 INT,
+    esta_formalizada                   BOOLEAN DEFAULT FALSE,
+    importacion                        BOOLEAN,  
+    exportacion                        BOOLEAN,    
+    esta_asociada_red                  BOOLEAN, 
+    esta_asociada_upa                  BOOLEAN, 
+    pertenece_cluter                   BOOLEAN, 
+    genera_ingresos                    BOOLEAN,     
+    genera_empleo                      BOOLEAN,
+    tipo_empleo                        TIPO_EMPLEO_ENUM,
+    tiene_camara_comercio              BOOLEAN DEFAULT FALSE, 
+    ventas_promedio_anual              INT,   
+    cantidad_clientes_promedio_mes     INT,
+    realiza_comercio_internacional     BOOLEAN,
+
 
     FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -312,8 +340,13 @@ CREATE TABLE emprendimiento (
 -- Tabla emprendedor
 CREATE TABLE emprendedor (
     id_emprendedor                    SERIAL PRIMARY KEY,
+    etnia_emprendedor                 ETNIA_EMPRENDEDOR_ENUM NOT NULL,
     discapacidad_emprendedor          BOOLEAN, 
-    etnia_emprendedor                ETNIA_EMPRENDEDOR_ENUM NOT NULL,
+    victima_emprendedor               BOOLEAN, 
+    poblacion_campesima_emprendedor   BOOLEAN, 
+    estado_civil_emprendedor          ESTADO_CIVIL_EMPRENDEDOR_ENUM NOT NULL,
+    cabeza_hogar_emprendedor          BOOLEAN, 
+    orientacion_sexual_emprendedor    BOOLEAN, 
     id_persona                        INT,
 
     FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE
@@ -360,6 +393,7 @@ CREATE TABLE programa (
 -- Tabla proyecto
 CREATE TABLE proyecto (
     id_proyecto                        SERIAL PRIMARY KEY, -- id_proyecto
+    nombre_proyecto                    VARCHAR(100),   -- nombre proyecto
     estado_proyecto                    VARCHAR(100),   -- estado_proyecto
     prioridad_proyecto                  VARCHAR(100),   -- prioridad
     etapa_proyecto                      VARCHAR(100),   -- etapa
