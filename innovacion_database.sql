@@ -1,6 +1,7 @@
 
 -- ==============================================================
 -- Enumerados para tipos específicos
+
 CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Intersexual');
 CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Género fluido', 'Agénero', 'Prefiero no decirlo', 'Otro');
 CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', 'Pasaporte (P)', 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)');
@@ -173,7 +174,6 @@ CREATE TABLE sede_campus (
 CREATE TABLE unidad_administrativa (
     id_unidad_administrativa         SERIAL PRIMARY KEY,
     nombre_unidad_administrativa     VARCHAR(100) NOT NULL,
-    tipo_ubicacion                   TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
     id_sede_campus                   INT,
 
     FOREIGN KEY (id_sede_campus) REFERENCES sede_campus (id_sede_campus) ON DELETE CASCADE ON UPDATE CASCADE
@@ -195,7 +195,6 @@ CREATE TABLE unidad_academica (
     id_unidad_academica         SERIAL PRIMARY KEY,
     tipo_unidad_academica       TIPO_UNIDAD_ACADEMICA_ENUM NOT NULL,
     nombre_unidad_academica     VARCHAR(100) NOT NULL,
-    tipo_ubicacion              TIPO_UBICACION_UNIDAD_IE_ENUM NOT NULL,
     id_sede_campus              INT,
 
     FOREIGN KEY (id_sede_campus) REFERENCES sede_campus (id_sede_campus) ON DELETE CASCADE ON UPDATE CASCADE
@@ -394,6 +393,7 @@ CREATE TABLE programa (
 -- Tabla proyecto
 CREATE TABLE proyecto (
     id_proyecto                        SERIAL PRIMARY KEY, -- id_proyecto
+    nombre_proyecto                    VARCHAR(100),   -- nombre proyecto
     estado_proyecto                    VARCHAR(100),   -- estado_proyecto
     prioridad_proyecto                  VARCHAR(100),   -- prioridad
     etapa_proyecto                      VARCHAR(100),   -- etapa
