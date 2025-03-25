@@ -483,7 +483,7 @@ CREATE TABLE asunto_de_trabajo_tipo_emprendimiento (
     FOREIGN KEY (id_ag_o_pe) REFERENCES ag_o_pe(id_ag_o_pe) ON DELETE SET NULL
 );
 
-
+-- La tabla cuantica
 CREATE TABLE etapa_asunto_trabajo_proyecto_actividad (
     id_etapa_asunto_trabajo_proyecto_actividad               SERIAL PRIMARY KEY,
     nombre_etapa_asunto_trabajo_proyecto_actividad           VARCHAR(255),
