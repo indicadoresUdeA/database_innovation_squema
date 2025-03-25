@@ -32,6 +32,12 @@ DROP TABLE IF EXISTS ciudad CASCADE;
 DROP TABLE IF EXISTS region CASCADE;
 DROP TABLE IF EXISTS departamento CASCADE;
 DROP TABLE IF EXISTS pais CASCADE;
+DROP TABLE IF EXISTS grupo_investigacion_persona;
+DROP TABLE IF EXISTS red_social_persona_empresa;
+DROP TABLE IF EXISTS subunidad_administrativa_persona;
+DROP TABLE IF EXISTS emprendedor;
+DROP TABLE IF EXISTS sede_campus;
+DROP TABLE IF EXISTS etapa_asunto_trabajo_proyecto_actividad;
 
 -- Eliminar los tipos ENUM creados
 DROP TYPE IF EXISTS TIPO_OPERACION_LOG CASCADE;
