@@ -12,7 +12,7 @@ CREATE TYPE ESTADO_CIVIL_EMPRENDEDOR_ENUM AS ENUM ('Soltero', 'Casado', 'Unión 
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural', 'Periurbana');
 CREATE TYPE MACROSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
-CREATE TYPE SUBSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Agricultura', 'Ganadería', 'Alimentos y bebidas', 'Textiles, confecciones, cuero y calzado', 'Productos químicos y farmacéuticos', 'Plásticos y caucho', 'Minerales no metálicos', 'Metalmecánica', 'Automotriz', 'Electrónica y electrodomésticos',);
+CREATE TYPE SUBSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Agricultura', 'Ganadería', 'Alimentos y bebidas', 'Textiles, confecciones, cuero y calzado', 'Productos químicos y farmacéuticos', 'Plásticos y caucho', 'Minerales no metálicos', 'Metalmecánica', 'Automotriz', 'Electrónica y electrodomésticos');
 CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura', 'Institución educativa');
 CREATE TYPE ROL_ENUM AS ENUM ('Empleado', 'Gerente', 'Socio', 'Fundador', 'Inversionista');
 CREATE TYPE MAGNITUD_EMPRESA_ENUM AS ENUM ('Grande', 'Mediana', 'Pequeña');
@@ -133,7 +133,6 @@ CREATE TABLE empresa (
     telefono_empresa                  VARCHAR(20),      
     magnitud_empresa                  MAGNITUD_EMPRESA_ENUM,  
     naturaleza_juridica               VARCHAR(100),
-    telefono_empresa                  VARCHAR(20),
     correo_empresa                    VARCHAR(100) UNIQUE NOT NULL,
     logo_empresa_url                  TEXT,
     es_emprendimiento                 BOOLEAN DEFAULT FALSE,
@@ -219,19 +218,6 @@ CREATE TABLE grupo_investigacion (
 
     FOREIGN KEY (id_unidad_academica) REFERENCES unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
--- Tabla subunidad_administrativa_persona
-CREATE TABLE subunidad_administrativa_persona (
-    id_subunidad_administrativa_persona   SERIAL PRIMARY KEY,
-    id_subunidad_administrativa           INT NOT NULL,
-    fecha_inicio                          DATE,
-    fecha_finalizacion                    DATE,
-    id_persona                            INT NOT NULL,
-
-
-    FOREIGN KEY (id_unidad_academica) REFERENCES unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 
 -- Tabla subunidad_administrativa_persona
 CREATE TABLE subunidad_administrativa_persona (
