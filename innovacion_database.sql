@@ -120,7 +120,10 @@ CREATE TABLE persona (
     es_emprendedor               BOOLEAN DEFAULT FALSE,   
     foto_persona_url             TEXT,              
     fecha_creacion_registro      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_ultima_actualizacion   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    fecha_ultima_actualizacion   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_direccion                 INT NOT NULL,
+
+    FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Tabla empresa
