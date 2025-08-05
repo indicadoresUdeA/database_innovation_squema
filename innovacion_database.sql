@@ -143,6 +143,16 @@ CREATE TABLE empresa (
     ultima_actualizacion              TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE direccion_empresa_persona (
+    id_direccion_empresa_persona         SERIAL PRIMARY KEY,
+    id_direccion                         VARCHAR(200) NOT NULL,
+    id_persona                           INT NOT NULL,
+    id_empresa                           INT NOT NULL
+
+    FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
 -- Tabla relacion_empresa_persona
 CREATE TABLE relacion_empresa_persona (
