@@ -274,7 +274,7 @@ CREATE TABLE pais (
     codigo_iso2               CHAR(2) UNIQUE,                        -- Código ISO 3166-1 alpha-2 (ej: CO)
     codigo_iso3               CHAR(3) UNIQUE,                        -- Código ISO 3166-1 alpha-3 (ej: COL)
     codigo_numerico           VARCHAR(3),                            -- Código ISO numérico (ej: 170)
-    url_polygon_pais          TEXT,                                  -- URL a archivo GeoJSON con polígono del país
+    url_polygon_pais          TEXT                                  -- URL a archivo GeoJSON con polígono del país
 );
 
 CREATE TABLE departamento (
@@ -486,7 +486,7 @@ CREATE TABLE programa_academico (
     id_unidad_academica         INT NOT NULL,                          -- FK a unidad académica
     activo                      BOOLEAN DEFAULT TRUE,                  -- Soft delete
     
-    FOREIGN KEY (id_unidad_academica) REFERENCES unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_unidad_academica) REFERENCES unidad_academica (id_unidad_academica) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Grupo de investigación
@@ -548,7 +548,6 @@ CREATE TABLE programa_academico_persona (
     FOREIGN KEY (id_programa_academico) REFERENCES programa_academico (id_programa_academico) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT check_fechas_programa CHECK (fecha_fin IS NULL OR fecha_fin >= fecha_inicio),
-    CONSTRAINT check_promedio CHECK (promedio_acumulado IS NULL OR (promedio_acumulado >= 0 AND promedio_acumulado <= 5)),
     UNIQUE(id_programa_academico, id_persona, fecha_inicio)
 );
 
@@ -922,7 +921,6 @@ COMMENT ON TABLE emprendedor IS 'Información adicional de personas que son empr
 
 -- Comentarios en columnas importantes
 COMMENT ON COLUMN persona.activo IS 'Soft delete: TRUE=registro activo, FALSE=registro eliminado lógicamente';
-COMMENT ON COLUMN empresa.es_emprendimiento IS 'Indica si la empresa es un emprendimiento';
 COMMENT ON COLUMN sede_campus.es_sede_principal IS 'Identifica la sede principal de la empresa/institución';
 
 -- ==============================================================
