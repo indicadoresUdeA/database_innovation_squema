@@ -814,7 +814,6 @@ CREATE TABLE subactividad_producto (
     id_subactividad                       SERIAL PRIMARY KEY,                    -- ID único
     id_actividad                          INT NOT NULL,                          -- FK a actividad principal
     id_dimension_emprendimiento           INT,                                   -- FK a dimensión
-    id_direccion                          INT,                                   -- FK a dirección del evento
     nombre_subactividad_producto          VARCHAR(255) NOT NULL,                 -- Nombre
     tipo_subactividad_producto            VARCHAR(100),                          -- Tipo
     fecha_subactividad_producto           DATE NOT NULL,                         -- Fecha
@@ -829,7 +828,6 @@ CREATE TABLE subactividad_producto (
     observaciones_subactividad            TEXT,                                  -- Observaciones
     
     FOREIGN KEY (id_actividad) REFERENCES actividad_momento (id_actividad) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (id_dimension_emprendimiento) REFERENCES dimension_emprendimiento (id_dimension_emprendimiento) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT check_horas_subactividad CHECK (hora_finalizacion_subactividad IS NULL OR hora_finalizacion_subactividad >= hora_inicio_subactividad)
 );
