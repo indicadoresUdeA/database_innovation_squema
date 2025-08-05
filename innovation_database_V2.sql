@@ -560,7 +560,7 @@ CREATE TABLE profesion (
     titulo_profesion   VARCHAR(100) NOT NULL UNIQUE,          -- Título profesional
     area_profesion     VARCHAR(100),                          -- Área del conocimiento
     codigo_profesion   VARCHAR(50),                           -- Código clasificación ocupacional
-    activo             BOOLEAN DEFAULT TRUE,                  -- Soft delete
+    activo             BOOLEAN DEFAULT TRUE                  -- Soft delete
 );
 
 CREATE TABLE profesion_persona (
@@ -723,7 +723,7 @@ CREATE TABLE ag_o_pe (
     personas_ag_o_pe                     TEXT,                                  -- Personas involucradas
     procesos_ag_pe                       TEXT,                                  -- Procesos relacionados
     macroproceso_ag_pe                   TEXT,                                  -- Macroproceso al que pertenece
-    activo                              BOOLEAN DEFAULT TRUE,                  -- Soft delete
+    activo                              BOOLEAN DEFAULT TRUE                  -- Soft delete
 );
 
 CREATE TABLE asunto_de_trabajo_tipo_emprendimiento (
