@@ -124,7 +124,7 @@ CREATE TABLE direccion (
 
 CREATE TABLE persona (
     id_persona                   SERIAL PRIMARY KEY,                    -- ID único de la persona
-    primer_nombre_persona        VARCHAR(100) NOT NULL,                 -- Nombres completos
+    primer_nombre_personas        VARCHAR(100) NOT NULL,                 -- Nombres completos
     segundo_nombre_persona       VARCHAR(100),                           -- Nombres completos
     primer_apellido_persona      VARCHAR(100) NOT NULL,                 -- Nombres completos
     segundo_apellido_persona     VARCHAR(100) NOT NULL,                 -- Nombres completos
