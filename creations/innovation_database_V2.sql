@@ -11,16 +11,15 @@ BEGIN;
 
 CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Intersexual');
 CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Género fluido', 'Agénero', 'Prefiero no decirlo', 'Otro');
-CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', 'Pasaporte (P)', 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)');
+CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', 'Pasaporte (P)', 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)', 'Permiso por Protección Temporal (PPT)');
 CREATE TYPE ESTRATO_SOCIOECONOMICO_ENUM AS ENUM ('Estrato 1 (Bajo-bajo)', 'Estrato 2 (Bajo)', 'Estrato 3 (Medio-bajo)', 'Estrato 4 (Medio)', 'Estrato 5 (Medio-alto)', 'Estrato 6 (Alto)');
 CREATE TYPE ETNIA_EMPRENDEDOR_ENUM AS ENUM ('Blanco', 'Mestizo', 'Afrocolombiano', 'Indígena', 'Raizal', 'Palenquero', 'Rom o Gitano', 'Prefiero no decir', 'Ninguno de los anteriores');
 CREATE TYPE ESTADO_CIVIL_EMPRENDEDOR_ENUM AS ENUM ('Soltero', 'Casado','Unión libre', 'Separado', 'Divorciado', 'Viudo', 'Otro');
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural','Periurbana');
 CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura', 'Institución educativa');
-CREATE TYPE MAGNITUD_EMPRESA_ENUM AS ENUM ('Grande','Mediana','Pequeña');
-CREATE TYPE MACROSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
-CREATE TYPE SUBSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Agricultura', 'Ganadería', 'Alimentos y bebidas', 'Textiles, confecciones, cuero y calzado', 'Productos químicos y farmacéuticos', 'Plásticos y caucho', 'Minerales no metálicos', 'Metalmecánica', 'Automotriz', 'Electrónica y electrodomésticos','Software y desarrollo','Servicios financieros','Salud','Educación','Turismo','Logística y transporte','Construcción','Energía y recursos','Telecomunicaciones','Comercio al por menor','Comercio al por mayor');
+CREATE TYPE MACROSECTOR_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
+CREATE TYPE SUBSECTOR_EMPRESA_ENUM AS ENUM ('Agricultura', 'Ganadería', 'Alimentos y bebidas', 'Textiles, confecciones, cuero y calzado', 'Productos químicos y farmacéuticos', 'Plásticos y caucho', 'Minerales no metálicos', 'Metalmecánica', 'Automotriz', 'Electrónica y electrodomésticos','Software y desarrollo','Servicios financieros','Salud','Educación','Turismo','Logística y transporte','Construcción','Energía y recursos','Telecomunicaciones','Comercio al por menor','Comercio al por mayor');
 CREATE TYPE ESTADO_DESARROLLO_EMPREN_ENUM AS ENUM ('En incubación','Consolidado', 'En pausa', 'Finalizado');
 CREATE TYPE TIPO_EMPLEO_ENUM AS ENUM ('Temporal', 'Fijo', 'Mixto');
 CREATE TYPE TIPO_UNIDAD_ACADEMICA_ENUM AS ENUM ('Facultad', 'Escuela', 'Instituto', 'Corporación');
@@ -147,7 +146,7 @@ CREATE TABLE persona (
     sexo_biologico               SEXO_ENUM NOT NULL,                   -- Sexo biológico al nacer
     genero                       GENERO_ENUM NOT NULL,                 -- Identidad de género
     telefono_celular             VARCHAR(20),                           -- Teléfono móvil principal
-    correo_electronico           VARCHAR(100) UNIQUE NOT NULL,         -- Email principal (único)
+    correo_electronico_personal  VARCHAR(100) UNIQUE NOT NULL,         -- Email principal (único)
     correo_alternativo           VARCHAR(100),                          -- Email secundario
     estrato_socioeconomico       ESTRATO_SOCIOECONOMICO_ENUM,         -- Estrato socioeconómico (Colombia)
     foto_persona_url             TEXT,                                  -- URL a foto de perfil
@@ -157,8 +156,7 @@ CREATE TABLE persona (
     fecha_actualizacion          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Última actualización
     
     FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT check_fecha_nacimiento CHECK (fecha_nacimiento_persona <= CURRENT_DATE),  -- No puede nacer en el futuro
-    CONSTRAINT check_correo_formato CHECK (correo_electronico ~* '^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$')  -- Validación de email
+    CONSTRAINT check_fecha_nacimiento CHECK (fecha_nacimiento_persona <= CURRENT_DATE)
 );
 
 CREATE TABLE empresa (
@@ -168,6 +166,10 @@ CREATE TABLE empresa (
     categoria_empresa                 CATEGORIA_EMPRESA_ENUM NOT NULL,      -- Tamaño según empleados
     zona_empresa                      ZONA_EMPRESA_ENUM NOT NULL,           -- Ubicación urbana/rural
     tipo_empresa                      TIPO_EMPRESA_ENUM NOT NULL,           -- Sector económico
+    macrosector_emprendimiento        MACROSECTOR_EMPRESA_ENUM NOT NULL,    -- Sector principal
+    subsector_emprendimiento          SUBSECTOR_EMPRESA_ENUM NOT NULL,      -- Subsector específico
+    naturaleza_juridica               VARCHAR(100),                          -- SAS, LTDA, SA, etc.
+    telefono_empresa                  VARCHAR(20),                           -- Teléfono principal
     magnitud_empresa                  MAGNITUD_EMPRESA_ENUM,                -- Tamaño según facturación
     naturaleza_juridica               NATURALEZA_JURIDICA_ENUM,             -- SAS, LTDA, SA, etc.
     telefono                          VARCHAR(20),                           -- Teléfono principal
@@ -320,8 +322,6 @@ CREATE TABLE emprendimiento (
     surgimiento_emprendimiento         VARCHAR(255),                          -- Cómo surgió la idea
     idea_negocio                       TEXT,                                  -- Descripción de la idea
     estado_desarrollo_emprendimiento   ESTADO_DESARROLLO_EMPREN_ENUM NOT NULL, -- Estado actual
-    macrosector_emprendimiento         MACROSECTOR_EMPRENDIMIENTO_ENUM,      -- Sector principal
-    subsector_emprendimiento           SUBSECTOR_EMPRENDIMIENTO_ENUM,        -- Subsector específico
     cantidad_empleados                 INTEGER DEFAULT 0,                         -- Número de empleados
     esta_formalizada                   BOOLEAN DEFAULT FALSE,                 -- Tiene registro mercantil
     importacion                        BOOLEAN DEFAULT FALSE,                 -- Importa productos
