@@ -157,7 +157,7 @@ CREATE TABLE empresa (
     macrosector_emprendimiento        MACROSECTOR_EMPRESA_ENUM NOT NULL,    -- Sector principal
     subsector_emprendimiento          SUBSECTOR_EMPRESA_ENUM NOT NULL,      -- Subsector específico
     naturaleza_juridica               VARCHAR(100),                          -- SAS, LTDA, SA, etc.
-    telefono                          VARCHAR(20),                           -- Teléfono principal
+    telefono_empresa                  VARCHAR(20),                           -- Teléfono principal
     correo_empresa                    VARCHAR(100) UNIQUE NOT NULL,         -- Email corporativo (único)
     sitio_web_url                     TEXT,                                 -- URL del sitio web
     logo_empresa_url                  TEXT,                                  -- URL al logo
