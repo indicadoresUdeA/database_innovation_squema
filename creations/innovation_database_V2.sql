@@ -37,6 +37,19 @@ CREATE TYPE TIPO_OPERACION_LOG AS ENUM ('INSERT','UPDATE','DELETE');
 CREATE TYPE AMBITO_ROL_ENUM AS ENUM ('ACADEMICO', 'ADMINISTRATIVO', 'PROYECTO', 'PROGRAMA', 'EMPRESA', 'INVESTIGACION', 'ACTIVIDAD', 'EMPRENDIMIENTO', 'PROCESO','GENERAL');
 CREATE TYPE TIPO_ENTIDAD_ROL_ENUM AS ENUM ('EMPRESA','SEDE_CAMPUS','UNIDAD_ACADEMICA','UNIDAD_ADMINISTRATIVA','SUBUNIDAD_ADMINISTRATIVA','PROGRAMA_ACADEMICO','GRUPO_INVESTIGACION','PROGRAMA','PROYECTO','AG_O_PE','ASUNTO_TRABAJO','MAPA_CONOCIMIENTO','ACTIVIDAD','SUBACTIVIDAD','ETAPA_ASUNTO_TRABAJO','EMPRENDIMIENTO','DIMENSION_EMPRENDIMIENTO', 'PROFESION');
 
+CREATE TYPE TIPO_PROGRAMA_ENUM AS ENUM ('Formación','Incubación','Aceleración','Preincubación','Investigación','Innovación','Extensión','Fortalecimiento','Convocatoria','Eventos');
+CREATE TYPE ALCANCE_PROYECTO_ENUM AS ENUM ('Local','Municipal','Departamental','Regional','Nacional','Internacional');
+CREATE TYPE TIPO_AG_PE_ENUM AS ENUM ('Asunto de Gestión','Proceso Ejecutable');
+CREATE TYPE ESTADO_DOCUMENTACION_ENUM AS ENUM ('Sin iniciar','En elaboración','En revisión','Aprobada','Publicada','Obsoleta');
+CREATE TYPE FASE_ACTIVIDAD_ENUM AS ENUM ('Planeación','Convocatoria','Ejecución','Seguimiento','Cierre','Evaluación');
+CREATE TYPE NATURALEZA_JURIDICA_ENUM AS ENUM ('Persona Natural','SAS','LTDA','SA','S. en C.','SCA','EU','Cooperativa','Fundación','Corporación','Asociación');
+CREATE TYPE CATEGORIA_COLCIENCIAS_ENUM AS ENUM ('A1','A','B','C','Reconocido');
+CREATE TYPE AREA_PROFESION_ENUM AS ENUM ('Agronomía, veterinaria y afines','Bellas artes','Ciencias de la educación','Ciencias de la salud','Ciencias sociales y humanas','Economía, administración, contaduría y afines','Ingeniería, arquitectura, urbanismo y afines','Matemáticas y ciencias naturales');
+CREATE TYPE TIPO_CUENTA_RED_SOCIAL_ENUM AS ENUM ('Personal','Corporativa','Institucional','Marca','Proyecto','Comunidad');
+CREATE TYPE TIPO_SUBACTIVIDAD_PRODUCTO_ENUM AS ENUM ('Taller','Mentoría','Asesoría','Charla','Capacitación','Networking','Demostración','Diagnóstico','Entrega','Otro');
+
+
+
 -- ==============================================================
 -- JERARQUÍA GEOGRÁFICA
 -- Estructura: País > Departamento > Región > Ciudad > Comuna > Barrio > Dirección
@@ -112,7 +125,7 @@ CREATE TABLE direccion (
     codigo_postal             VARCHAR(10),                           -- Código postal
     latitud                   DECIMAL(10, 8),                        -- Coordenada GPS latitud
     longitud                  DECIMAL(11, 8),                        -- Coordenada GPS longitud
-    id_barrio                 INTEGER NOT NULL,                          -- FK al barrio
+    id_barrio                 INTEGER NOT NULL,                      -- FK al barrio
 
     FOREIGN KEY (id_barrio) REFERENCES barrio (id_barrio) ON DELETE RESTRICT ON UPDATE CASCADE
 );
@@ -124,20 +137,19 @@ CREATE TABLE direccion (
 
 CREATE TABLE persona (
     id_persona                   SERIAL PRIMARY KEY,                    -- ID único de la persona
-    primer_nombre_personas        VARCHAR(100) NOT NULL,                 -- Nombres completos
+    primer_nombre_persona        VARCHAR(100) NOT NULL,                 -- Nombres completos
     segundo_nombre_persona       VARCHAR(100),                           -- Nombres completos
     primer_apellido_persona      VARCHAR(100) NOT NULL,                 -- Nombres completos
-    segundo_apellido_persona     VARCHAR(100) NOT NULL,                 -- Nombres completos
+    segundo_apellido_persona     VARCHAR(100),                         -- Nombres completos
     tipo_documento_persona       TIPO_DOCUMENTO_PERSONA_ENUM NOT NULL, -- Tipo de documento de identidad
     numero_documento_persona     VARCHAR(50) UNIQUE NOT NULL,          -- Número del documento (único)
+    fecha_nacimiento_persona     DATE NOT NULL,                         -- Fecha de nacimiento
     sexo_biologico               SEXO_ENUM NOT NULL,                   -- Sexo biológico al nacer
     genero                       GENERO_ENUM NOT NULL,                 -- Identidad de género
     telefono_celular             VARCHAR(20),                           -- Teléfono móvil principal
-    telefono_fijo                VARCHAR(20),                           -- Teléfono fijo/alternativo
     correo_electronico           VARCHAR(100) UNIQUE NOT NULL,         -- Email principal (único)
     correo_alternativo           VARCHAR(100),                          -- Email secundario
     estrato_socioeconomico       ESTRATO_SOCIOECONOMICO_ENUM,         -- Estrato socioeconómico (Colombia)
-    fecha_nacimiento_persona     DATE NOT NULL,                         -- Fecha de nacimiento
     foto_persona_url             TEXT,                                  -- URL a foto de perfil
     id_direccion                 INT,                                   -- FK a dirección de residencia
     activo                       BOOLEAN DEFAULT TRUE,                  -- Soft delete
@@ -157,7 +169,7 @@ CREATE TABLE empresa (
     zona_empresa                      ZONA_EMPRESA_ENUM NOT NULL,           -- Ubicación urbana/rural
     tipo_empresa                      TIPO_EMPRESA_ENUM NOT NULL,           -- Sector económico
     magnitud_empresa                  MAGNITUD_EMPRESA_ENUM,                -- Tamaño según facturación
-    naturaleza_juridica               VARCHAR(100),                          -- SAS, LTDA, SA, etc.
+    naturaleza_juridica               NATURALEZA_JURIDICA_ENUM,             -- SAS, LTDA, SA, etc.
     telefono                          VARCHAR(20),                           -- Teléfono principal
     correo_empresa                    VARCHAR(100) UNIQUE NOT NULL,         -- Email corporativo (único)
     sitio_web_url                     TEXT,                                 -- URL del sitio web
@@ -261,7 +273,7 @@ CREATE TABLE grupo_investigacion (
     id_grupo_investigacion       SERIAL PRIMARY KEY,                    -- ID único
     nombre_grupo_investigacion   VARCHAR(100) NOT NULL,                 -- Nombre del grupo
     codigo_colciencias           VARCHAR(50),                           -- Código Minciencias/Colciencias
-    categoria_colciencias        VARCHAR(10),                           -- Categoría (A1, A, B, C)
+    categoria_colciencias        CATEGORIA_COLCIENCIAS_ENUM,            -- Categoría (A1, A, B, C)
     lineas_investigacion         TEXT,                                  -- Líneas de investigación
     id_unidad_academica          INTEGER NOT NULL,                          -- FK a unidad académica
     activo                       BOOLEAN DEFAULT TRUE,                  -- Soft delete
@@ -278,7 +290,7 @@ CREATE TABLE grupo_investigacion (
 CREATE TABLE profesion (
     id_profesion       SERIAL PRIMARY KEY,                    -- ID único
     titulo_profesion   VARCHAR(100) NOT NULL UNIQUE,          -- Título profesional
-    area_profesion     VARCHAR(100),                          -- Área del conocimiento
+    area_profesion     AREA_PROFESION_ENUM NOT  NULL,         -- Área del conocimiento
     codigo_profesion   VARCHAR(50),                           -- Código clasificación ocupacional
     activo             BOOLEAN DEFAULT TRUE                  -- Soft delete
 );
@@ -288,7 +300,7 @@ CREATE TABLE red_social_persona_empresa (
     id_red_social_persona_empresa  SERIAL PRIMARY KEY,                    -- ID único
     nombre_plataforma              VARCHAR(50) NOT NULL,                  -- LinkedIn, Twitter, etc.
     url_perfil                     TEXT NOT NULL,                         -- URL al perfil
-    tipo_cuenta                    VARCHAR(50),                           -- Personal, Corporativa, etc.
+    tipo_cuenta                    TIPO_CUENTA_RED_SOCIAL_ENUM NOT NULL,  -- Personal, Corporativa, etc.
     id_persona                     INT,                                   -- FK a persona (NULL si es empresa)
     id_empresa                     INT,                                   -- FK a empresa (NULL si es persona)
     activo                         BOOLEAN DEFAULT TRUE,                  -- Soft delete
@@ -361,7 +373,7 @@ CREATE TABLE programa (
     nombre_programa                     VARCHAR(255) NOT NULL,                 -- Nombre completo del programa
     nombre_corto_programa               VARCHAR(100),                          -- Nombre abreviado
     objetivo_programa                   TEXT,                                  -- Objetivo general
-    tipo_programa                       VARCHAR(100),                          -- Tipo de programa
+    tipo_programa                       TIPO_PROGRAMA_ENUM NOT NULL,           -- Tipo de programa
     estado_programa                     ESTADO_PROGRAMA_ENUM NOT NULL DEFAULT 'En desarrollo', -- Estado actual
     prioridad_programa                  PRIORIDAD_ENUM DEFAULT 'Media',       -- Nivel de prioridad
     etapa_programa                      ETAPA_ENUM DEFAULT 'Planificación',   -- Etapa actual
@@ -395,7 +407,7 @@ CREATE TABLE proyecto (
     tipo_ingreso_proyecto              VARCHAR(100),                          -- Tipo de ingreso generado
     figura_contractual_proyecto        VARCHAR(100),                          -- Tipo de contrato
     fuente_recurso_proyecto            VARCHAR(255),                          -- Origen de los recursos
-    alcance_proyecto                   TEXT,                                  -- Alcance detallado
+    alcance_proyecto                   ALCANCE_PROYECTO_ENUM NOT NULL,                                  -- Alcance detallado
     valor_proyecto                     NUMERIC(15,2),                         -- Valor total del proyecto
     moneda_proyecto                    VARCHAR(10) DEFAULT 'COP',            -- Moneda (COP, USD, EUR, etc.)
     activo                            BOOLEAN DEFAULT TRUE,                  -- Soft delete
@@ -414,7 +426,7 @@ CREATE TABLE proyecto (
 CREATE TABLE ag_o_pe (
     id_ag_o_pe                           SERIAL PRIMARY KEY,                    -- ID único
     nombre_ag_o_pe                       VARCHAR(255) NOT NULL,                 -- Nombre del asunto/proceso
-    tipo_ag_pe                           VARCHAR(100),                          -- Tipo (Asunto de Gestión o Proceso Ejecutable)
+    tipo_ag_pe                           TIPO_AG_PE_ENUM NOT NULL,              -- Tipo (Asunto de Gestión o Proceso Ejecutable)
     sigla_corta_ag_pe                    VARCHAR(50),                           -- Sigla corta
     sigla_larga_ag_pe                    VARCHAR(100),                          -- Sigla larga
     objetivo_ag_pe                       TEXT,                                  -- Objetivo del asunto/proceso
@@ -440,7 +452,7 @@ CREATE TABLE mapa_conocimiento_proceso (
     id_asunto_de_trabajo_tipo_emprendimiento                    INT,                                   -- FK a asunto de trabajo
     nombre_proceso                                              VARCHAR(255) NOT NULL,                 -- Nombre del proceso
     prioridad_proceso                                           PRIORIDAD_ENUM DEFAULT 'Media',       -- Prioridad
-    estado_documentacion_proceso                                VARCHAR(100),                          -- Estado de la documentación
+    estado_documentacion_proceso                                ESTADO_DOCUMENTACION_ENUM NOT NULL,    -- Estado de la documentación
     cronograma_inicio_proceso                                   DATE,                                  -- Fecha inicio planeada
     cronograma_fin_proceso                                      DATE,                                  -- Fecha fin planeada
     duracion_dias                                               INT,                                   -- Duración en días
@@ -493,7 +505,7 @@ CREATE TABLE actividad_momento (
     tipo_actividad                              TIPO_ACTIVIDAD_ENUM DEFAULT 'Actividad', -- Tipo
     materiales_actividad                        TEXT,                                  -- Materiales necesarios
     alimentacion_actividad                      BOOLEAN DEFAULT FALSE,                 -- Incluye alimentación
-    fase_actividad                              VARCHAR(100),                          -- Fase del proceso
+    fase_actividad                              FASE_ACTIVIDAD_ENUM NOT NULL,          -- Fase del proceso
     semestre_ejecucion_fase                     VARCHAR(100),                          -- Semestre de ejecución
     observaciones_actividad                     TEXT,                                  -- Observaciones
     
@@ -744,6 +756,11 @@ COMMENT ON TABLE relacion_actividad_persona IS 'Asistencia/participación de per
 COMMENT ON TABLE asignacion_rol_persona IS 'Asignación polimórfica de roles de personas sobre múltiples entidades (1 sola FK activa, coherente con TIPO_ENTIDAD_ROL_ENUM).';
 COMMENT ON TABLE log_cambios IS 'Bitácora de auditoría por tabla/operación con datos antes/después, usuario, IP y referencia a persona.';
 
+-- ==============================================================
+-- PERMISOS
+-- ==============================================================
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;
 
 COMMIT;
 
