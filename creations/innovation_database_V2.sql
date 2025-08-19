@@ -18,7 +18,6 @@ CREATE TYPE ESTADO_CIVIL_EMPRENDEDOR_ENUM AS ENUM ('Soltero', 'Casado','Unión l
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural','Periurbana');
 CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura', 'Institución educativa');
-CREATE TYPE MAGNITUD_EMPRESA_ENUM AS ENUM ('Grande','Mediana','Pequeña');
 CREATE TYPE MACROSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
 CREATE TYPE SUBSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Agricultura', 'Ganadería', 'Alimentos y bebidas', 'Textiles, confecciones, cuero y calzado', 'Productos químicos y farmacéuticos', 'Plásticos y caucho', 'Minerales no metálicos', 'Metalmecánica', 'Automotriz', 'Electrónica y electrodomésticos','Software y desarrollo','Servicios financieros','Salud','Educación','Turismo','Logística y transporte','Construcción','Energía y recursos','Telecomunicaciones','Comercio al por menor','Comercio al por mayor');
 CREATE TYPE ESTADO_DESARROLLO_EMPREN_ENUM AS ENUM ('En incubación','Consolidado', 'En pausa', 'Finalizado');
@@ -134,7 +133,7 @@ CREATE TABLE persona (
     genero                       GENERO_ENUM NOT NULL,                 -- Identidad de género
     telefono_celular             VARCHAR(20),                           -- Teléfono móvil principal
     telefono_fijo                VARCHAR(20),                           -- Teléfono fijo/alternativo
-    correo_electronico           VARCHAR(100) UNIQUE NOT NULL,         -- Email principal (único)
+    correo_electronico_personal  VARCHAR(100) UNIQUE NOT NULL,         -- Email principal (único)
     correo_alternativo           VARCHAR(100),                          -- Email secundario
     estrato_socioeconomico       ESTRATO_SOCIOECONOMICO_ENUM,         -- Estrato socioeconómico (Colombia)
     fecha_nacimiento_persona     DATE NOT NULL,                         -- Fecha de nacimiento
@@ -155,7 +154,8 @@ CREATE TABLE empresa (
     categoria_empresa                 CATEGORIA_EMPRESA_ENUM NOT NULL,      -- Tamaño según empleados
     zona_empresa                      ZONA_EMPRESA_ENUM NOT NULL,           -- Ubicación urbana/rural
     tipo_empresa                      TIPO_EMPRESA_ENUM NOT NULL,           -- Sector económico
-    magnitud_empresa                  MAGNITUD_EMPRESA_ENUM,                -- Tamaño según facturación
+    macrosector_emprendimiento        MACROSECTOR_EMPRENDIMIENTO_ENUM NOT NULL, -- Sector principal
+    subsector_emprendimiento          SUBSECTOR_EMPRENDIMIENTO_ENUM NOT NULL,   -- Subsector específico
     naturaleza_juridica               VARCHAR(100),                          -- SAS, LTDA, SA, etc.
     telefono                          VARCHAR(20),                           -- Teléfono principal
     correo_empresa                    VARCHAR(100) UNIQUE NOT NULL,         -- Email corporativo (único)
@@ -307,8 +307,6 @@ CREATE TABLE emprendimiento (
     surgimiento_emprendimiento         VARCHAR(255),                          -- Cómo surgió la idea
     idea_negocio                       TEXT,                                  -- Descripción de la idea
     estado_desarrollo_emprendimiento   ESTADO_DESARROLLO_EMPREN_ENUM NOT NULL, -- Estado actual
-    macrosector_emprendimiento         MACROSECTOR_EMPRENDIMIENTO_ENUM,      -- Sector principal
-    subsector_emprendimiento           SUBSECTOR_EMPRENDIMIENTO_ENUM,        -- Subsector específico
     cantidad_empleados                 INTEGER DEFAULT 0,                         -- Número de empleados
     esta_formalizada                   BOOLEAN DEFAULT FALSE,                 -- Tiene registro mercantil
     importacion                        BOOLEAN DEFAULT FALSE,                 -- Importa productos
