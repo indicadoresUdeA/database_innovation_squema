@@ -11,7 +11,7 @@ BEGIN;
 
 CREATE TYPE SEXO_ENUM AS ENUM ('Masculino', 'Femenino', 'Intersexual');
 CREATE TYPE GENERO_ENUM AS ENUM ('Hombre', 'Mujer', 'No binario', 'Género fluido', 'Agénero', 'Prefiero no decirlo', 'Otro');
-CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', 'Pasaporte (P)', 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)');
+CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 'Tarjeta de Identidad (TI)', 'Cédula de Extranjería (CE)', 'Pasaporte (P)', 'Registro Civil (RC)', 'NIT (Número de Identificación Tributaria)', 'Documento Nacional de Identidad (DNI)', 'Permiso Especial de Permanencia (PEP)', 'Permiso por Protección Temporal (PPT)');
 CREATE TYPE ESTRATO_SOCIOECONOMICO_ENUM AS ENUM ('Estrato 1 (Bajo-bajo)', 'Estrato 2 (Bajo)', 'Estrato 3 (Medio-bajo)', 'Estrato 4 (Medio)', 'Estrato 5 (Medio-alto)', 'Estrato 6 (Alto)');
 CREATE TYPE ETNIA_EMPRENDEDOR_ENUM AS ENUM ('Blanco', 'Mestizo', 'Afrocolombiano', 'Indígena', 'Raizal', 'Palenquero', 'Rom o Gitano', 'Prefiero no decir', 'Ninguno de los anteriores');
 CREATE TYPE ESTADO_CIVIL_EMPRENDEDOR_ENUM AS ENUM ('Soltero', 'Casado','Unión libre', 'Separado', 'Divorciado', 'Viudo', 'Otro');
