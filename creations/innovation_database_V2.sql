@@ -145,8 +145,7 @@ CREATE TABLE persona (
     fecha_actualizacion          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Última actualización
     
     FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT check_fecha_nacimiento CHECK (fecha_nacimiento_persona <= CURRENT_DATE),  -- No puede nacer en el futuro
-    CONSTRAINT check_correo_formato CHECK (correo_electronico ~* '^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$')  -- Validación de email
+    CONSTRAINT check_fecha_nacimiento CHECK (fecha_nacimiento_persona <= CURRENT_DATE)
 );
 
 CREATE TABLE empresa (
