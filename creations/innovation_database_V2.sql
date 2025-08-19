@@ -18,8 +18,8 @@ CREATE TYPE ESTADO_CIVIL_EMPRENDEDOR_ENUM AS ENUM ('Soltero', 'Casado','Unión l
 CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural','Periurbana');
 CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura', 'Institución educativa');
-CREATE TYPE MACROSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
-CREATE TYPE SUBSECTOR_EMPRENDIMIENTO_ENUM AS ENUM ('Agricultura', 'Ganadería', 'Alimentos y bebidas', 'Textiles, confecciones, cuero y calzado', 'Productos químicos y farmacéuticos', 'Plásticos y caucho', 'Minerales no metálicos', 'Metalmecánica', 'Automotriz', 'Electrónica y electrodomésticos','Software y desarrollo','Servicios financieros','Salud','Educación','Turismo','Logística y transporte','Construcción','Energía y recursos','Telecomunicaciones','Comercio al por menor','Comercio al por mayor');
+CREATE TYPE MACROSECTOR_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
+CREATE TYPE SUBSECTOR_EMPRESA_ENUM AS ENUM ('Agricultura', 'Ganadería', 'Alimentos y bebidas', 'Textiles, confecciones, cuero y calzado', 'Productos químicos y farmacéuticos', 'Plásticos y caucho', 'Minerales no metálicos', 'Metalmecánica', 'Automotriz', 'Electrónica y electrodomésticos','Software y desarrollo','Servicios financieros','Salud','Educación','Turismo','Logística y transporte','Construcción','Energía y recursos','Telecomunicaciones','Comercio al por menor','Comercio al por mayor');
 CREATE TYPE ESTADO_DESARROLLO_EMPREN_ENUM AS ENUM ('En incubación','Consolidado', 'En pausa', 'Finalizado');
 CREATE TYPE TIPO_EMPLEO_ENUM AS ENUM ('Temporal', 'Fijo', 'Mixto');
 CREATE TYPE TIPO_UNIDAD_ACADEMICA_ENUM AS ENUM ('Facultad', 'Escuela', 'Instituto', 'Corporación');
@@ -154,8 +154,8 @@ CREATE TABLE empresa (
     categoria_empresa                 CATEGORIA_EMPRESA_ENUM NOT NULL,      -- Tamaño según empleados
     zona_empresa                      ZONA_EMPRESA_ENUM NOT NULL,           -- Ubicación urbana/rural
     tipo_empresa                      TIPO_EMPRESA_ENUM NOT NULL,           -- Sector económico
-    macrosector_emprendimiento        MACROSECTOR_EMPRENDIMIENTO_ENUM NOT NULL, -- Sector principal
-    subsector_emprendimiento          SUBSECTOR_EMPRENDIMIENTO_ENUM NOT NULL,   -- Subsector específico
+    macrosector_emprendimiento        MACROSECTOR_EMPRESA_ENUM NOT NULL,    -- Sector principal
+    subsector_emprendimiento          SUBSECTOR_EMPRESA_ENUM NOT NULL,      -- Subsector específico
     naturaleza_juridica               VARCHAR(100),                          -- SAS, LTDA, SA, etc.
     telefono                          VARCHAR(20),                           -- Teléfono principal
     correo_empresa                    VARCHAR(100) UNIQUE NOT NULL,         -- Email corporativo (único)
