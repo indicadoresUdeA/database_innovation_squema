@@ -43,7 +43,7 @@ CREATE TYPE ESTADO_DOCUMENTACION_ENUM AS ENUM ('Sin iniciar','En elaboración','
 CREATE TYPE FASE_ACTIVIDAD_ENUM AS ENUM ('Planeación','Convocatoria','Ejecución','Seguimiento','Cierre','Evaluación');
 CREATE TYPE NATURALEZA_JURIDICA_ENUM AS ENUM ('Persona Natural','SAS','LTDA','SA','S. en C.','SCA','EU','Cooperativa','Fundación','Corporación','Asociación');
 CREATE TYPE CATEGORIA_COLCIENCIAS_ENUM AS ENUM ('A1','A','B','C','Reconocido');
-CREATE TYPE AREA_PROFESION_ENUM AS ENUM ('Agronomía, veterinaria y afines','Bellas artes','Ciencias de la educación','Ciencias de la salud','Ciencias sociales y humanas','Economía, administración, contaduría y afines','Ingeniería, arquitectura, urbanismo y afines','Matemáticas y ciencias naturales');
+CREATE TYPE AREA_PROFESION_ENUM AS ENUM ('Agronomía, veterinaria y afines','Bellas artes','Ciencias de la educación','Ciencias de la salud','Ciencias sociales y humanas','Economía, administración, contaduría y afines','Ingeniería, arquitectura, urbanismo y afines','Matemáticas y ciencias naturales', 'Agricola', 'Servicios', 'Otro');
 CREATE TYPE TIPO_CUENTA_RED_SOCIAL_ENUM AS ENUM ('Personal','Corporativa','Institucional','Marca','Proyecto','Comunidad');
 CREATE TYPE TIPO_SUBACTIVIDAD_PRODUCTO_ENUM AS ENUM ('Taller','Mentoría','Asesoría','Charla','Capacitación','Networking','Demostración','Diagnóstico','Entrega','Otro');
 
