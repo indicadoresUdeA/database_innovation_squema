@@ -166,13 +166,13 @@ CREATE TABLE empresa (
     categoria_empresa                 CATEGORIA_EMPRESA_ENUM NOT NULL,      -- Tamaño según empleados
     zona_empresa                      ZONA_EMPRESA_ENUM NOT NULL,           -- Ubicación urbana/rural
     tipo_empresa                      TIPO_EMPRESA_ENUM NOT NULL,           -- Sector económico
-    macrosector_emprendimiento        MACROSECTOR_EMPRESA_ENUM NOT NULL,    -- Sector principal
-    subsector_emprendimiento          SUBSECTOR_EMPRESA_ENUM NOT NULL,      -- Subsector específico
+    macrosector_empresa               MACROSECTOR_EMPRESA_ENUM NOT NULL,    -- Sector principal
+    subsector_empresa                 SUBSECTOR_EMPRESA_ENUM NOT NULL,      -- Subsector específico
     naturaleza_juridica               VARCHAR(100),                          -- SAS, LTDA, SA, etc.
     telefono_empresa                  VARCHAR(20),                           -- Teléfono principal
     magnitud_empresa                  MAGNITUD_EMPRESA_ENUM,                -- Tamaño según facturación
     naturaleza_juridica               NATURALEZA_JURIDICA_ENUM,             -- SAS, LTDA, SA, etc.
-    telefono                          VARCHAR(20),                           -- Teléfono principal
+    telefono_empresa                  VARCHAR(20),                           -- Teléfono principal
     correo_empresa                    VARCHAR(100) UNIQUE NOT NULL,         -- Email corporativo (único)
     sitio_web_url                     TEXT,                                 -- URL del sitio web
     logo_empresa_url                  TEXT,                                  -- URL al logo
@@ -180,11 +180,11 @@ CREATE TABLE empresa (
     pertenece_parque                  BOOLEAN DEFAULT FALSE,                 -- Pertenece a parque tecnológico
     fecha_fundacion                   DATE,                                  -- Fecha de fundación
     numero_empleados                  INT,                                   -- Cantidad de empleados
+    es_emprendimiento                 BOOLEAN NOT NULL,
     activo                           BOOLEAN DEFAULT TRUE,                  -- Soft delete
     fecha_creacion                   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Fecha de registro
     fecha_actualizacion              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Última actualización
     
-    CONSTRAINT check_correo_empresa CHECK (correo_empresa ~* '^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$'),  -- Validación email
     CONSTRAINT check_fecha_fundacion CHECK (fecha_fundacion <= CURRENT_DATE),  -- No puede fundarse en el futuro
     CONSTRAINT check_numero_empleados CHECK (numero_empleados >= 0)  -- No puede tener empleados negativos
 );
