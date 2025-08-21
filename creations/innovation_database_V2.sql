@@ -24,7 +24,7 @@ CREATE TYPE ESTADO_DESARROLLO_EMPREN_ENUM AS ENUM ('En incubación','Consolidado
 CREATE TYPE TIPO_EMPLEO_ENUM AS ENUM ('Temporal', 'Fijo', 'Mixto');
 CREATE TYPE TIPO_UNIDAD_ACADEMICA_ENUM AS ENUM ('Facultad', 'Escuela', 'Instituto', 'Corporación');
 CREATE TYPE TIPO_UBICACION_UNIDAD_IE_ENUM AS ENUM ('Campus principal', 'Sede', 'Sede regional', 'Sede única');
-CREATE TYPE NIVEL_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Técnica profesional', 'Tecnológico', 'Profesional','Especialización','Maestría', 'Doctorado');
+CREATE TYPE NIVEL_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Técnica profesional', 'Tecnológico', 'Profesional','Especialización','Maestría', 'Doctorado', 'Básica secundaria', 'Básica primaria', 'Ninguno');
 CREATE TYPE AREA_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Ingeniería', 'Ciencias Sociales', 'Ciencias Naturales', 'Artes', 'Humanidades','Ciencias de la Salud','Ciencias Económicas y Administrativas','Ciencias Agrarias','Educación');
 CREATE TYPE ESTADO_PROGRAMA_ENUM AS ENUM ('Activo', 'Inactivo','En desarrollo', 'Finalizado', 'Suspendido');
 CREATE TYPE ESTADO_PROYECTO_ENUM AS ENUM ('Pendiente','En ejecución','Finalizado', 'Cancelado','Suspendido');
