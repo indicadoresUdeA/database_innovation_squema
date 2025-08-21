@@ -320,20 +320,15 @@ CREATE TABLE emprendimiento (
     surgimiento_emprendimiento         VARCHAR(255),                          -- Cómo surgió la idea
     idea_negocio                       TEXT,                                  -- Descripción de la idea
     estado_desarrollo_emprendimiento   ESTADO_DESARROLLO_EMPREN_ENUM NOT NULL, -- Estado actual
-    cantidad_empleados                 INTEGER DEFAULT 0,                         -- Número de empleados
     esta_formalizada                   BOOLEAN DEFAULT FALSE,                 -- Tiene registro mercantil
     importacion                        BOOLEAN DEFAULT FALSE,                 -- Importa productos
     exportacion                        BOOLEAN DEFAULT FALSE,                 -- Exporta productos
     esta_asociada_red                  BOOLEAN DEFAULT FALSE,                 -- Pertenece a red de emprendimiento
     esta_asociada_upa                  BOOLEAN DEFAULT FALSE,                 -- Asociada a UPA (Unidad Productiva Asociativa)
     pertenece_cluster                  BOOLEAN DEFAULT FALSE,                 -- Pertenece a clúster empresarial
-    genera_ingresos                    BOOLEAN DEFAULT FALSE,                 -- Ya genera ingresos
-    genera_empleo                      BOOLEAN DEFAULT FALSE,                 -- Genera empleo formal
-    tipo_empleo                        TIPO_EMPLEO_ENUM,                      -- Tipo de empleos que genera
     tiene_camara_comercio              BOOLEAN DEFAULT FALSE,                 -- Registrado en Cámara de Comercio
     ventas_promedio_anual              NUMERIC(15,2),                         -- Ventas anuales en pesos
     cantidad_clientes_promedio_mes     INT,                                   -- Clientes mensuales promedio
-    realiza_comercio_internacional     BOOLEAN DEFAULT FALSE,                 -- Comercio internacional
     activo                             BOOLEAN DEFAULT TRUE,                  -- Soft delete
     fecha_creacion                     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Fecha de registro
     fecha_actualizacion                TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Última actualización
