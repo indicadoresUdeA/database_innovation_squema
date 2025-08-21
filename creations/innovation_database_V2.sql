@@ -168,7 +168,6 @@ CREATE TABLE empresa (
     tipo_empresa                      TIPO_EMPRESA_ENUM NOT NULL,           -- Sector económico
     macrosector_empresa               MACROSECTOR_EMPRESA_ENUM NOT NULL,    -- Sector principal
     subsector_empresa                 SUBSECTOR_EMPRESA_ENUM NOT NULL,      -- Subsector específico
-    telefono_empresa                  VARCHAR(20),                           -- Teléfono principal
     magnitud_empresa                  MAGNITUD_EMPRESA_ENUM,                -- Tamaño según facturación
     naturaleza_juridica               NATURALEZA_JURIDICA_ENUM,             -- SAS, LTDA, SA, etc.
     telefono_empresa                  VARCHAR(20),                           -- Teléfono principal
