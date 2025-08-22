@@ -313,8 +313,7 @@ CREATE TABLE red_social_persona_empresa (
 
 CREATE TABLE emprendimiento (
     id_emprendimiento                  SERIAL PRIMARY KEY,                    -- ID único
-    id_empresa                         INTEGER NOT NULL,                          -- FK a empresa (1:1)
-    surgimiento_emprendimiento         VARCHAR(255),                          -- Cómo surgió la idea
+    id_empresa                         INTEGER NOT NULL,                      -- FK a empresa (1:1)
     idea_negocio                       TEXT,                                  -- Descripción de la idea
     estado_desarrollo_emprendimiento   ESTADO_DESARROLLO_EMPREN_ENUM NOT NULL, -- Estado actual
     esta_formalizada                   BOOLEAN DEFAULT FALSE,                 -- Tiene registro mercantil
