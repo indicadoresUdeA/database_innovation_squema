@@ -21,7 +21,6 @@ CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', '
 CREATE TYPE MACROSECTOR_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
 CREATE TYPE SUBSECTOR_EMPRESA_ENUM AS ENUM ('Agricultura', 'Ganadería', 'Alimentos y bebidas', 'Textiles, confecciones, cuero y calzado', 'Productos químicos y farmacéuticos', 'Plásticos y caucho', 'Minerales no metálicos', 'Metalmecánica', 'Automotriz', 'Electrónica y electrodomésticos','Software y desarrollo','Servicios financieros','Salud','Educación','Turismo','Logística y transporte','Construcción','Energía y recursos','Telecomunicaciones','Comercio al por menor','Comercio al por mayor');
 CREATE TYPE ESTADO_DESARROLLO_EMPREN_ENUM AS ENUM ('En incubación','Consolidado', 'En pausa', 'Finalizado');
-CREATE TYPE TIPO_EMPLEO_ENUM AS ENUM ('Temporal', 'Fijo', 'Mixto');
 CREATE TYPE TIPO_UNIDAD_ACADEMICA_ENUM AS ENUM ('Facultad', 'Escuela', 'Instituto', 'Corporación');
 CREATE TYPE TIPO_UBICACION_UNIDAD_IE_ENUM AS ENUM ('Campus principal', 'Sede', 'Sede regional', 'Sede única');
 CREATE TYPE NIVEL_PROGRAMA_ACADEMICO_ENUM AS ENUM ('Técnica profesional', 'Tecnológico', 'Profesional','Especialización','Maestría', 'Doctorado', 'Básica secundaria', 'Básica primaria', 'Ninguno');
@@ -35,7 +34,6 @@ CREATE TYPE TIPO_ACTIVIDAD_ENUM AS ENUM ('Evento','Actividad', 'Curso','Taller',
 CREATE TYPE TIPO_OPERACION_LOG AS ENUM ('INSERT','UPDATE','DELETE');
 CREATE TYPE AMBITO_ROL_ENUM AS ENUM ('ACADEMICO', 'ADMINISTRATIVO', 'PROYECTO', 'PROGRAMA', 'EMPRESA', 'INVESTIGACION', 'ACTIVIDAD', 'EMPRENDIMIENTO', 'PROCESO','GENERAL');
 CREATE TYPE TIPO_ENTIDAD_ROL_ENUM AS ENUM ('EMPRESA','SEDE_CAMPUS','UNIDAD_ACADEMICA','UNIDAD_ADMINISTRATIVA','SUBUNIDAD_ADMINISTRATIVA','PROGRAMA_ACADEMICO','GRUPO_INVESTIGACION','PROGRAMA','PROYECTO','AG_O_PE','ASUNTO_TRABAJO','MAPA_CONOCIMIENTO','ACTIVIDAD','SUBACTIVIDAD','ETAPA_ASUNTO_TRABAJO','EMPRENDIMIENTO','DIMENSION_EMPRENDIMIENTO', 'PROFESION');
-
 CREATE TYPE TIPO_PROGRAMA_ENUM AS ENUM ('Formación','Incubación','Aceleración','Preincubación','Investigación','Innovación','Extensión','Fortalecimiento','Convocatoria','Eventos');
 CREATE TYPE ALCANCE_PROYECTO_ENUM AS ENUM ('Local','Municipal','Departamental','Regional','Nacional','Internacional');
 CREATE TYPE TIPO_AG_PE_ENUM AS ENUM ('Asunto de Gestión','Proceso Ejecutable');
