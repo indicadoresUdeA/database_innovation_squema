@@ -36,7 +36,7 @@ CREATE TYPE AMBITO_ROL_ENUM AS ENUM ('ACADEMICO', 'ADMINISTRATIVO', 'PROYECTO', 
 CREATE TYPE TIPO_ENTIDAD_ROL_ENUM AS ENUM ('EMPRESA','SEDE_CAMPUS','UNIDAD_ACADEMICA','UNIDAD_ADMINISTRATIVA','SUBUNIDAD_ADMINISTRATIVA','PROGRAMA_ACADEMICO','GRUPO_INVESTIGACION','PROGRAMA','PROYECTO','AG_O_PE','ASUNTO_TRABAJO','MAPA_CONOCIMIENTO','ACTIVIDAD','SUBACTIVIDAD','ETAPA_ASUNTO_TRABAJO','EMPRENDIMIENTO','DIMENSION_EMPRENDIMIENTO', 'PROFESION');
 CREATE TYPE TIPO_PROGRAMA_ENUM AS ENUM ('Formación','Incubación','Aceleración','Preincubación','Investigación','Innovación','Extensión','Fortalecimiento','Convocatoria','Eventos');
 CREATE TYPE ALCANCE_PROYECTO_ENUM AS ENUM ('Local','Municipal','Departamental','Regional','Nacional','Internacional');
-CREATE TYPE TIPO_AG_PE_ENUM AS ENUM ('Asunto de Gestión','Proceso Ejecutable');
+CREATE TYPE TIPO_AG_PE_ENUM AS ENUM ('Misional', 'Apoyo-Operativo', 'Apoyo-Metodológico');
 CREATE TYPE ESTADO_DOCUMENTACION_ENUM AS ENUM ('Sin iniciar','En elaboración','En revisión','Aprobada','Publicada','Obsoleta');
 CREATE TYPE FASE_ACTIVIDAD_ENUM AS ENUM ('Planeación','Convocatoria','Ejecución','Seguimiento','Cierre','Evaluación');
 CREATE TYPE NATURALEZA_JURIDICA_ENUM AS ENUM ('Persona Natural','SAS','LTDA','SA','S. en C.','SCA','EU','Cooperativa','Fundación','Corporación','Asociación');
