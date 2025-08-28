@@ -148,6 +148,7 @@ CREATE TABLE persona (
     correo_alternativo           VARCHAR(100),                          -- Email secundario
     estrato_socioeconomico       ESTRATO_SOCIOECONOMICO_ENUM,         -- Estrato socioeconómico (Colombia)
     foto_persona_url             TEXT,                                  -- URL a foto de perfil
+    es_emprendimiento            BOOLEAN,   
     id_direccion                 INT,                                   -- FK a dirección de residencia
     activo                       BOOLEAN DEFAULT TRUE,                  -- Soft delete
     fecha_creacion               TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Fecha de registro
