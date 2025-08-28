@@ -133,26 +133,34 @@ CREATE TABLE direccion (
 -- ==============================================================
 
 CREATE TABLE persona (
-    id_persona                   SERIAL PRIMARY KEY,                    -- ID único de la persona
-    primer_nombre_persona        VARCHAR(100) NOT NULL,                 -- Nombres completos
-    segundo_nombre_persona       VARCHAR(100),                           -- Nombres completos
-    primer_apellido_persona      VARCHAR(100) NOT NULL,                 -- Nombres completos
-    segundo_apellido_persona     VARCHAR(100),                         -- Nombres completos
-    tipo_documento_persona       TIPO_DOCUMENTO_PERSONA_ENUM NOT NULL, -- Tipo de documento de identidad
-    numero_documento_persona     VARCHAR(50) UNIQUE NOT NULL,          -- Número del documento (único)
-    fecha_nacimiento_persona     DATE NOT NULL,                         -- Fecha de nacimiento
-    sexo_biologico               SEXO_ENUM NOT NULL,                   -- Sexo biológico al nacer
-    genero                       GENERO_ENUM NOT NULL,                 -- Identidad de género
-    telefono_celular             VARCHAR(20),                           -- Teléfono móvil principal
-    correo_electronico_personal  VARCHAR(100) UNIQUE NOT NULL,         -- Email principal (único)
-    correo_alternativo           VARCHAR(100),                          -- Email secundario
-    estrato_socioeconomico       ESTRATO_SOCIOECONOMICO_ENUM,         -- Estrato socioeconómico (Colombia)
-    foto_persona_url             TEXT,                                  -- URL a foto de perfil
-    es_emprendimiento            BOOLEAN,   
-    id_direccion                 INT,                                   -- FK a dirección de residencia
-    activo                       BOOLEAN DEFAULT TRUE,                  -- Soft delete
-    fecha_creacion               TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Fecha de registro
-    fecha_actualizacion          TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Última actualización
+    id_persona                        SERIAL PRIMARY KEY,                    -- ID único de la persona
+    primer_nombre_persona             VARCHAR(100) NOT NULL,                 -- Nombres completos
+    segundo_nombre_persona            VARCHAR(100),                           -- Nombres completos
+    primer_apellido_persona           VARCHAR(100) NOT NULL,                 -- Nombres completos
+    segundo_apellido_persona          VARCHAR(100),                         -- Nombres completos
+    tipo_documento_persona            TIPO_DOCUMENTO_PERSONA_ENUM NOT NULL, -- Tipo de documento de identidad
+    numero_documento_persona          VARCHAR(50) UNIQUE NOT NULL,          -- Número del documento (único)
+    fecha_nacimiento_persona          DATE NOT NULL,                         -- Fecha de nacimiento
+    sexo_biologico                    SEXO_ENUM NOT NULL,                   -- Sexo biológico al nacer
+    genero                            GENERO_ENUM NOT NULL,                 -- Identidad de género
+    telefono_celular                  VARCHAR(20),                           -- Teléfono móvil principal
+    correo_electronico_personal       VARCHAR(100) UNIQUE NOT NULL,         -- Email principal (único)
+    correo_alternativo                VARCHAR(100),                          -- Email secundario
+    estrato_socioeconomico            ESTRATO_SOCIOECONOMICO_ENUM,         -- Estrato socioeconómico (Colombia)
+    foto_persona_url                  TEXT,                                  -- URL a foto de perfil
+    es_emprendedor                    BOOLEAN,                              -- tag de emprendedor
+    etnia_emprendedor                 ETNIA_EMPRENDEDOR_ENUM NOT NULL,      -- Autoidentificación étnica
+    discapacidad_emprendedor          BOOLEAN DEFAULT FALSE,                 -- Tiene alguna discapacidad
+    victima_emprendedor               BOOLEAN DEFAULT FALSE,                 -- Víctima del conflicto armado
+    poblacion_campesina_emprendedor   BOOLEAN DEFAULT FALSE,                 -- Población campesina
+    estado_civil_emprendedor          ESTADO_CIVIL_EMPRENDEDOR_ENUM NOT NULL, -- Estado civil
+    cabeza_hogar_emprendedor          BOOLEAN DEFAULT FALSE,                 -- Es cabeza de hogar
+    numero_personas_a_cargo           INTEGER DEFAULT 0,                         -- Número de personas a cargo
+    nivel_educativo_maximo            NIVEL_PROGRAMA_ACADEMICO_ENUM,        -- Máximo nivel educativo alcanzado   
+    id_direccion                      INT,                                   -- FK a dirección de residencia
+    activo                            BOOLEAN DEFAULT TRUE,                  -- Soft delete
+    fecha_creacion                    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Fecha de registro
+    fecha_actualizacion               TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Última actualización
     
     FOREIGN KEY (id_direccion) REFERENCES direccion (id_direccion) ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT check_fecha_nacimiento CHECK (fecha_nacimiento_persona <= CURRENT_DATE)
@@ -176,7 +184,7 @@ CREATE TABLE empresa (
     pertenece_parque                  BOOLEAN DEFAULT FALSE,                 -- Pertenece a parque tecnológico
     fecha_fundacion                   DATE,                                  -- Fecha de fundación
     numero_empleados                  INT,                                   -- Cantidad de empleados
-    es_emprendimiento                 BOOLEAN NOT NULL,
+    es_emprendimiento                 BOOLEAN NOT NULL,                     -- tag de emprendimiento
     activo                           BOOLEAN DEFAULT TRUE,                  -- Soft delete
     fecha_creacion                   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Fecha de registro
     fecha_actualizacion              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Última actualización
@@ -336,17 +344,9 @@ CREATE TABLE emprendimiento (
     CONSTRAINT check_clientes CHECK (cantidad_clientes_promedio_mes IS NULL OR cantidad_clientes_promedio_mes >= 0)
 );
 
-CREATE TABLE emprendedor (
+CREATE TABLE emprendedor_empresario (
     id_emprendedor                    SERIAL PRIMARY KEY,                    -- ID único
-    id_persona                        INTEGER NOT NULL,                                  -- enlace con persona
-    etnia_emprendedor                 ETNIA_EMPRENDEDOR_ENUM NOT NULL,      -- Autoidentificación étnica
-    discapacidad_emprendedor          BOOLEAN DEFAULT FALSE,                 -- Tiene alguna discapacidad
-    victima_emprendedor               BOOLEAN DEFAULT FALSE,                 -- Víctima del conflicto armado
-    poblacion_campesina_emprendedor   BOOLEAN DEFAULT FALSE,                 -- Población campesina
-    estado_civil_emprendedor          ESTADO_CIVIL_EMPRENDEDOR_ENUM NOT NULL, -- Estado civil
-    cabeza_hogar_emprendedor          BOOLEAN DEFAULT FALSE,                 -- Es cabeza de hogar
-    numero_personas_a_cargo           INTEGER DEFAULT 0,                         -- Número de personas a cargo
-    nivel_educativo_maximo            NIVEL_PROGRAMA_ACADEMICO_ENUM,        -- Máximo nivel educativo alcanzado
+    id_persona                        INTEGER NOT NULL,                      -- enlace con persona
     activo                            BOOLEAN DEFAULT TRUE,                  -- Soft delete
     fecha_creacion                    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Fecha de registro
     fecha_actualizacion               TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Última actualización

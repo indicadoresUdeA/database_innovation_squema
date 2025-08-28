@@ -1,9 +1,10 @@
 -- ==============================================================
 -- MODELO DE BASE DE DATOS - SISTEMA DE GESTIÓN DE EMPRENDIMIENTO + TALENTO HUMANO
--- Versión: Beta Extendida
+-- Versión: Beta Extendida Integrada
 -- Fecha: 2025
 -- Descripción: Sistema integral para gestión de emprendimiento,
 --              empresas, instituciones educativas, programas y talento humano
+--              con integración completa entre módulos
 -- ==============================================================
 
 BEGIN;
@@ -36,7 +37,7 @@ CREATE TYPE MODALIDAD_ACTIVIDAD_ENUM AS ENUM ('Virtual', 'Presencial', 'Híbrido
 CREATE TYPE TIPO_ACTIVIDAD_ENUM AS ENUM ('Evento','Actividad', 'Curso','Taller', 'Conferencia','Seminario');
 CREATE TYPE TIPO_OPERACION_LOG AS ENUM ('INSERT','UPDATE','DELETE');
 CREATE TYPE AMBITO_ROL_ENUM AS ENUM ('ACADEMICO', 'ADMINISTRATIVO', 'PROYECTO', 'PROGRAMA', 'EMPRESA', 'INVESTIGACION', 'ACTIVIDAD', 'EMPRENDIMIENTO', 'PROCESO','GENERAL');
-CREATE TYPE TIPO_ENTIDAD_ROL_ENUM AS ENUM ('EMPRESA','SEDE_CAMPUS','UNIDAD_ACADEMICA','UNIDAD_ADMINISTRATIVA','SUBUNIDAD_ADMINISTRATIVA','PROGRAMA_ACADEMICO','GRUPO_INVESTIGACION','PROGRAMA','PROYECTO','AG_O_PE','ASUNTO_TRABAJO','MAPA_CONOCIMIENTO','ACTIVIDAD','SUBACTIVIDAD','ETAPA_ASUNTO_TRABAJO','EMPRENDIMIENTO','DIMENSION_EMPRENDIMIENTO', 'PROFESION','CONTRATO','PROVEEDOR','INVENTARIO');
+CREATE TYPE TIPO_ENTIDAD_ROL_ENUM AS ENUM ('EMPRESA','SEDE_CAMPUS','UNIDAD_ACADEMICA','UNIDAD_ADMINISTRATIVA','SUBUNIDAD_ADMINISTRATIVA','PROGRAMA_ACADEMICO','GRUPO_INVESTIGACION','PROGRAMA','PROYECTO','AG_O_PE','ASUNTO_TRABAJO','MAPA_CONOCIMIENTO','ACTIVIDAD','SUBACTIVIDAD','ETAPA_ASUNTO_TRABAJO','EMPRENDIMIENTO','DIMENSION_EMPRENDIMIENTO', 'PROFESION','CONTRATO','PROVEEDOR','INVENTARIO','COMPONENTE','COMPRA');
 CREATE TYPE TIPO_PROGRAMA_ENUM AS ENUM ('Formación','Incubación','Aceleración','Preincubación','Investigación','Innovación','Extensión','Fortalecimiento','Convocatoria','Eventos');
 CREATE TYPE ALCANCE_PROYECTO_ENUM AS ENUM ('Local','Municipal','Departamental','Regional','Nacional','Internacional');
 CREATE TYPE TIPO_AG_PE_ENUM AS ENUM ('Misional', 'Apoyo-Operativo', 'Apoyo-Metodológico');
@@ -52,20 +53,24 @@ CREATE TYPE TIPO_SUBACTIVIDAD_PRODUCTO_ENUM AS ENUM ('Taller','Mentoría','Aseso
 -- NUEVOS TIPOS ENUM PARA TALENTO HUMANO
 -- ==============================================================
 
--- **NUEVO** - Para proveedores
+-- Para proveedores
 CREATE TYPE TIPO_PROVEEDOR_ENUM AS ENUM ('Persona Natural', 'Persona Jurídica', 'Mixto');
 
--- **NUEVO** - Para contratos
+-- Para contratos
 CREATE TYPE TIPO_CONTRATO_ENUM AS ENUM ('Prestación de Servicios', 'Obra o Labor', 'Consultoría', 'Suministro', 'Mantenimiento', 'Arrendamiento', 'Otros');
 CREATE TYPE ESTADO_CONTRATO_ENUM AS ENUM ('Borrador', 'En aprobación', 'Aprobado', 'Activo', 'Suspendido', 'Terminado', 'Liquidado', 'Cancelado');
 CREATE TYPE TIPO_VINCULACION_ENUM AS ENUM ('Contrato', 'Convenio', 'Acta', 'Orden de compra', 'Otros');
 
--- **NUEVO** - Para inventario
-CREATE TYPE TIPO_MOVIMIENTO_INVENTARIO_ENUM AS ENUM ('Entrada', 'Salida', 'Traslado', 'Asignación', 'Devolución', 'Baja', 'Ajuste');
+-- Para inventario (SIMPLIFICADO)
 CREATE TYPE ESTADO_INVENTARIO_ENUM AS ENUM ('Disponible', 'Asignado', 'En mantenimiento', 'Dado de baja', 'Perdido', 'En traslado');
+CREATE TYPE TIPO_SEGUIMIENTO_INVENTARIO_ENUM AS ENUM ('Traslado', 'Asignación', 'Devolución', 'Baja', 'Mantenimiento', 'Incidencia', 'Revisión');
 
--- **NUEVO** - Para oportunidades
+-- Para oportunidades
 CREATE TYPE ESTADO_OPORTUNIDAD_ENUM AS ENUM ('Identificada', 'En análisis', 'En preparación', 'Presentada', 'Aprobada', 'Rechazada', 'En ejecución', 'Finalizada');
+
+-- **NUEVOS** Para componentes y compras
+CREATE TYPE TIPO_COMPONENTE_ENUM AS ENUM ('Recursos humanos', 'Equipos', 'Materiales', 'Servicios', 'Infraestructura', 'Tecnología');
+CREATE TYPE ESTADO_COMPRA_ENUM AS ENUM ('Solicitada', 'En proceso', 'Aprobada', 'Rechazada', 'Entregada', 'Facturada');
 
 -- ==============================================================
 -- JERARQUÍA GEOGRÁFICA (SIN CAMBIOS)
@@ -466,88 +471,7 @@ CREATE TABLE mapa_conocimiento_proceso (
 );
 
 -- ==============================================================
--- ACTIVIDADES Y EVENTOS (SIN CAMBIOS)
--- ==============================================================
-
-CREATE TABLE etapa_asunto_trabajo_proyecto_actividad (
-    id_etapa_asunto_trabajo_proyecto_actividad               SERIAL PRIMARY KEY,
-    nombre_etapa_asunto_trabajo_proyecto_actividad           VARCHAR(255) NOT NULL,
-    descripcion_etapa_asunto_trabajo_proyecto_actividad      TEXT,
-    orden_etapa                                              INT,
-    id_asunto_de_trabajo_tipo_emprendimiento                    INTEGER NOT NULL,
-    id_proyecto                                              INTEGER NOT NULL,
-
-    FOREIGN KEY (id_asunto_de_trabajo_tipo_emprendimiento) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_de_trabajo_tipo_emprendimiento) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE dimension_emprendimiento (
-    id_dimension_emprendimiento           SERIAL PRIMARY KEY,
-    nombre_dimension_emprendimiento       VARCHAR(255) NOT NULL UNIQUE,
-    descripcion_dimension_emprendimiento  TEXT,
-    activo                                BOOLEAN DEFAULT TRUE
-);
-
-CREATE TABLE actividad_momento (
-    id_actividad_momento                        SERIAL PRIMARY KEY,
-    id_etapa_asunto_trabajo_proyecto_actividad  INT,
-    fecha_actividad                             DATE NOT NULL,
-    nombre_actividad                            VARCHAR(255) NOT NULL,
-    descripcion_actividad                       TEXT,
-    hora_inicio_actividad                       TIME,
-    hora_finalizacion_actividad                 TIME,
-    tematica_actividad                          VARCHAR(255),
-    modalidad_actividad                         MODALIDAD_ACTIVIDAD_ENUM DEFAULT 'Presencial',
-    tipo_actividad                              TIPO_ACTIVIDAD_ENUM DEFAULT 'Actividad',
-    materiales_actividad                        TEXT,
-    alimentacion_actividad                      BOOLEAN DEFAULT FALSE,
-    fase_actividad                              FASE_ACTIVIDAD_ENUM NOT NULL,
-    semestre_ejecucion_fase                     VARCHAR(100),
-    observaciones_actividad                     TEXT,
-    
-    FOREIGN KEY (id_etapa_asunto_trabajo_proyecto_actividad) REFERENCES etapa_asunto_trabajo_proyecto_actividad (id_etapa_asunto_trabajo_proyecto_actividad) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT check_horas_actividad CHECK (hora_finalizacion_actividad IS NULL OR hora_finalizacion_actividad >= hora_inicio_actividad)
-);
-
-CREATE TABLE subactividad_producto (
-    id_subactividad_producto              SERIAL PRIMARY KEY,
-    id_actividad_momento                  INTEGER NOT NULL,
-    id_dimension_emprendimiento           INT,
-    nombre_subactividad_producto          VARCHAR(255) NOT NULL,
-    tipo_subactividad_producto            VARCHAR(100),
-    fecha_subactividad_producto           DATE NOT NULL,
-    descripcion_subactividad_producto     TEXT,
-    hora_inicio_subactividad              TIME,
-    hora_finalizacion_subactividad        TIME,
-    tematica_subactividad                 VARCHAR(255),
-    modalidad_subactividad                MODALIDAD_ACTIVIDAD_ENUM DEFAULT 'Presencial',
-    materiales_subactividad               TEXT,
-    alimentacion_subactividad             BOOLEAN DEFAULT FALSE,
-    facilitador_subactividad              VARCHAR(255),
-    observaciones_subactividad            TEXT,
-    
-    FOREIGN KEY (id_actividad_momento) REFERENCES actividad_momento (id_actividad_momento) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_dimension_emprendimiento) REFERENCES dimension_emprendimiento (id_dimension_emprendimiento) ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT check_horas_subactividad CHECK (hora_finalizacion_subactividad IS NULL OR hora_finalizacion_subactividad >= hora_inicio_subactividad)
-);
-
-CREATE TABLE relacion_actividad_persona (
-    id_relacion_actividad_persona         SERIAL PRIMARY KEY,
-    id_persona                            INTEGER NOT NULL,
-    id_subactividad_producto              INTEGER NOT NULL,
-    asistio                               BOOLEAN DEFAULT TRUE,
-    calificacion                          INT,
-    comentarios                           TEXT,
-    rol                                   VARCHAR(255),
-    
-    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_subactividad_producto) REFERENCES subactividad_producto (id_subactividad_producto) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT check_calificacion CHECK (calificacion IS NULL OR (calificacion >= 1 AND calificacion <= 5)),
-    UNIQUE(id_persona, id_subactividad_producto)
-);
-
--- ==============================================================
--- **NUEVAS TABLAS PARA TALENTO HUMANO**
+-- **NUEVAS TABLAS PARA TALENTO HUMANO (INTEGRADAS)**
 -- ==============================================================
 
 -- **NUEVA** - Tabla de proveedores (puede ser persona o empresa)
@@ -659,49 +583,6 @@ CREATE TABLE informe_contrato (
     UNIQUE(id_contrato, numero_informe) -- No puede haber informes duplicados para el mismo contrato
 );
 
--- **NUEVA** - Actividades de contratos
-CREATE TABLE actividad_contrato (
-    id_actividad_contrato           SERIAL PRIMARY KEY,
-    id_contrato                     INTEGER NOT NULL,           -- **RELACION** - FK a contrato
-    nombre_actividad                VARCHAR(255) NOT NULL,
-    descripcion_actividad           TEXT,
-    orden_actividad                 INTEGER,
-    activo                          BOOLEAN DEFAULT TRUE,
-    
-    FOREIGN KEY (id_contrato) REFERENCES contrato (id_contrato) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- **NUEVA** - Productos/Entregables de contratos
-CREATE TABLE producto_contrato (
-    id_producto_contrato            SERIAL PRIMARY KEY,
-    id_actividad_contrato           INTEGER NOT NULL,           -- **RELACION** - FK a actividad
-    nombre_producto                 VARCHAR(255) NOT NULL,
-    descripcion_producto            TEXT,
-    url_archivo                     TEXT,
-    url_enlace                      TEXT,
-    activo                          BOOLEAN DEFAULT TRUE,
-    
-    FOREIGN KEY (id_actividad_contrato) REFERENCES actividad_contrato (id_actividad_contrato) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- **NUEVA** - Tareas de contratos
-CREATE TABLE tarea_contrato (
-    id_tarea_contrato               SERIAL PRIMARY KEY,
-    id_producto_contrato            INTEGER NOT NULL,           -- **RELACION** - FK a producto
-    id_informe_contrato             INTEGER,                    -- **RELACION** - FK a informe (opcional)
-    nombre_tarea                    VARCHAR(255) NOT NULL,
-    descripcion_tarea               TEXT,
-    url_tarea                       TEXT,
-    relacion_anexos                 TEXT,
-    aprobacion_anexos               BOOLEAN DEFAULT FALSE,
-    medios_verificacion             TEXT,
-    aprobacion_url                  BOOLEAN DEFAULT FALSE,
-    activo                          BOOLEAN DEFAULT TRUE,
-    
-    FOREIGN KEY (id_producto_contrato) REFERENCES producto_contrato (id_producto_contrato) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_informe_contrato) REFERENCES informe_contrato (id_informe_contrato) ON DELETE SET NULL ON UPDATE CASCADE
-);
-
 -- **NUEVA** - Gestión de oportunidades (modificada para integrar con proyectos)
 CREATE TABLE oportunidad (
     id_oportunidad                  SERIAL PRIMARY KEY,
@@ -763,7 +644,56 @@ CREATE TABLE acta (
     CONSTRAINT check_valor_acta CHECK (valor_acta IS NULL OR valor_acta >= 0)
 );
 
--- **NUEVA** - Inventario principal
+-- **NUEVAS** - Componentes y Compras (según imagen)
+CREATE TABLE componente (
+    id_componente                   SERIAL PRIMARY KEY,
+    id_proyecto                     INTEGER NOT NULL,           -- **RELACION** - FK a proyecto
+    nombre_componente               VARCHAR(255) NOT NULL,
+    tipo_componente                 TIPO_COMPONENTE_ENUM NOT NULL,
+    descripcion_componente          TEXT,
+    cantidad_requerida              INTEGER DEFAULT 1,
+    valor_unitario                  NUMERIC(12,2),
+    valor_total                     NUMERIC(15,2),
+    observaciones_componente        TEXT,
+    activo                          BOOLEAN DEFAULT TRUE,
+    fecha_creacion                  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE,
+    
+    CONSTRAINT check_cantidad_componente CHECK (cantidad_requerida > 0),
+    CONSTRAINT check_valor_unitario_comp CHECK (valor_unitario IS NULL OR valor_unitario >= 0),
+    CONSTRAINT check_valor_total_comp CHECK (valor_total IS NULL OR valor_total >= 0)
+);
+
+CREATE TABLE compra (
+    id_compra                       SERIAL PRIMARY KEY,
+    id_componente                   INTEGER,                    -- **RELACION** - FK a componente
+    id_proveedor                    INTEGER,                    -- **RELACION** - FK a proveedor
+    numero_orden                    VARCHAR(100),
+    estado_compra                   ESTADO_COMPRA_ENUM NOT NULL DEFAULT 'Solicitada',
+    fecha_solicitud                 DATE NOT NULL,
+    fecha_aprobacion                DATE,
+    fecha_entrega                   DATE,
+    valor_compra                    NUMERIC(15,2) NOT NULL,
+    observaciones_compra            TEXT,
+    url_factura                     TEXT,
+    activo                          BOOLEAN DEFAULT TRUE,
+    fecha_creacion                  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (id_componente) REFERENCES componente (id_componente) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (id_proveedor) REFERENCES proveedor (id_proveedor) ON DELETE SET NULL ON UPDATE CASCADE,
+    
+    CONSTRAINT check_valor_compra CHECK (valor_compra > 0),
+    CONSTRAINT check_fechas_compra CHECK (fecha_aprobacion IS NULL OR fecha_aprobacion >= fecha_solicitud)
+);
+
+-- ==============================================================
+-- **INVENTARIO SIMPLIFICADO (SOLO 2 TABLAS)**
+-- ==============================================================
+
+-- **SIMPLIFICADA** - Inventario principal
 CREATE TABLE inventario (
     id_inventario                   SERIAL PRIMARY KEY,
     codigo_inventario               VARCHAR(100) NOT NULL UNIQUE,
@@ -789,33 +719,47 @@ CREATE TABLE inventario (
     CONSTRAINT check_cantidad_inventario CHECK (cantidad >= 0)
 );
 
--- **NUEVA** - Movimientos de inventario (unifica traslados, asignaciones, etc.)
-CREATE TABLE movimiento_inventario (
-    id_movimiento_inventario        SERIAL PRIMARY KEY,
+-- **UNIFICADA** - Seguimiento que incluye TODOS los movimientos
+CREATE TABLE seguimiento_inventario (
+    id_seguimiento_inventario       SERIAL PRIMARY KEY,
     id_inventario                   INTEGER NOT NULL,           -- **RELACION** - FK a inventario
-    tipo_movimiento                 TIPO_MOVIMIENTO_INVENTARIO_ENUM NOT NULL,
+    tipo_seguimiento                TIPO_SEGUIMIENTO_INVENTARIO_ENUM NOT NULL,
+    nombre_item                     VARCHAR(255),
+    
+    -- Fechas
     fecha_solicitud                 DATE NOT NULL,
     fecha_movimiento                DATE,
+    
+    -- Personas involucradas
     id_persona_origen               INTEGER,                    -- **RELACION** - FK a persona origen
     id_persona_destino              INTEGER,                    -- **RELACION** - FK a persona destino
+    id_usuario_registro             INTEGER,                    -- **RELACION** - FK a persona que registra
+    
+    -- Ubicaciones
     ubicacion_origen                VARCHAR(200),
     ubicacion_destino               VARCHAR(200),
     centro_costo_origen             VARCHAR(100),
     centro_costo_destino            VARCHAR(100),
     dependencia_origen              VARCHAR(200),
     dependencia_destino             VARCHAR(200),
+    
+    -- Estados y observaciones
     estado_entrega                  VARCHAR(100),
     estado_devolucion               VARCHAR(100),
     observaciones_entrega           TEXT,
     observaciones_devolucion        TEXT,
+    incidencias                     TEXT,
+    responsable_seguimiento         VARCHAR(255),
+    
+    -- Documentos y evidencias
     url_formato_excel               TEXT,
     url_enlace_documento            TEXT,
     url_evidencia_correo            TEXT,
     url_evidencia_entrega           TEXT,
     url_evidencia_devolucion        TEXT,
+    
+    -- Control
     autorizacion                    BOOLEAN DEFAULT FALSE,
-    incidencias                     TEXT,
-    id_usuario_registro             INTEGER,                    -- **RELACION** - FK a persona que registra
     activo                          BOOLEAN DEFAULT TRUE,
     fecha_creacion                  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -825,30 +769,136 @@ CREATE TABLE movimiento_inventario (
     FOREIGN KEY (id_persona_destino) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (id_usuario_registro) REFERENCES persona (id_persona) ON DELETE SET NULL ON UPDATE CASCADE,
     
-    CONSTRAINT check_fechas_movimiento CHECK (fecha_movimiento IS NULL OR fecha_movimiento >= fecha_solicitud)
+    CONSTRAINT check_fechas_seguimiento CHECK (fecha_movimiento IS NULL OR fecha_movimiento >= fecha_solicitud)
 );
 
--- **NUEVA** - Seguimiento de inventarios
-CREATE TABLE seguimiento_inventario (
-    id_seguimiento_inventario       SERIAL PRIMARY KEY,
-    id_inventario                   INTEGER NOT NULL,           -- **RELACION** - FK a inventario
-    nombre_item                     VARCHAR(255),
-    incidencia                      TEXT,
-    estado_seguimiento              VARCHAR(100),
-    responsable_seguimiento         VARCHAR(255),
-    fecha_solicitud_seguimiento     DATE,
-    fecha_devolucion_seguimiento    DATE,
-    descripcion_seguimiento         TEXT,
-    observaciones_seguimiento       TEXT,
+-- ==============================================================
+-- **ACTIVIDADES Y PRODUCTOS INTEGRADOS CON CONTRATOS**
+-- ==============================================================
+
+CREATE TABLE etapa_asunto_trabajo_proyecto_actividad (
+    id_etapa_asunto_trabajo_proyecto_actividad               SERIAL PRIMARY KEY,
+    nombre_etapa_asunto_trabajo_proyecto_actividad           VARCHAR(255) NOT NULL,
+    descripcion_etapa_asunto_trabajo_proyecto_actividad      TEXT,
+    orden_etapa                                              INT,
+    id_asunto_de_trabajo_tipo_emprendimiento                    INTEGER NOT NULL,
+    id_proyecto                                              INTEGER NOT NULL,
+
+    FOREIGN KEY (id_asunto_de_trabajo_tipo_emprendimiento) REFERENCES asunto_de_trabajo_tipo_emprendimiento (id_asunto_de_trabajo_tipo_emprendimiento) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_proyecto) REFERENCES proyecto (id_proyecto) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE dimension_emprendimiento (
+    id_dimension_emprendimiento           SERIAL PRIMARY KEY,
+    nombre_dimension_emprendimiento       VARCHAR(255) NOT NULL UNIQUE,
+    descripcion_dimension_emprendimiento  TEXT,
+    activo                                BOOLEAN DEFAULT TRUE
+);
+
+-- **INTEGRADA** - Actividad momento ahora incluye campos de contrato
+CREATE TABLE actividad_momento (
+    id_actividad_momento                        SERIAL PRIMARY KEY,
+    id_etapa_asunto_trabajo_proyecto_actividad  INT,
+    -- **NUEVA INTEGRACION** - Campos de contrato
+    id_contrato                                 INTEGER,                    -- **RELACION** - FK a contrato (OPCIONAL)
+    orden_actividad_contrato                    INTEGER,                    -- Orden si es actividad de contrato
+    
+    -- Campos originales de actividad
+    fecha_actividad                             DATE NOT NULL,
+    nombre_actividad                            VARCHAR(255) NOT NULL,
+    descripcion_actividad                       TEXT,
+    hora_inicio_actividad                       TIME,
+    hora_finalizacion_actividad                 TIME,
+    tematica_actividad                          VARCHAR(255),
+    modalidad_actividad                         MODALIDAD_ACTIVIDAD_ENUM DEFAULT 'Presencial',
+    tipo_actividad                              TIPO_ACTIVIDAD_ENUM DEFAULT 'Actividad',
+    materiales_actividad                        TEXT,
+    alimentacion_actividad                      BOOLEAN DEFAULT FALSE,
+    fase_actividad                              FASE_ACTIVIDAD_ENUM NOT NULL,
+    semestre_ejecucion_fase                     VARCHAR(100),
+    observaciones_actividad                     TEXT,
+    activo                                      BOOLEAN DEFAULT TRUE,
+    fecha_creacion                              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion                         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (id_etapa_asunto_trabajo_proyecto_actividad) REFERENCES etapa_asunto_trabajo_proyecto_actividad (id_etapa_asunto_trabajo_proyecto_actividad) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_contrato) REFERENCES contrato (id_contrato) ON DELETE CASCADE ON UPDATE CASCADE,
+    
+    CONSTRAINT check_horas_actividad CHECK (hora_finalizacion_actividad IS NULL OR hora_finalizacion_actividad >= hora_inicio_actividad)
+);
+
+-- **INTEGRADA** - Subactividad producto ahora incluye campos de producto de contrato
+CREATE TABLE subactividad_producto (
+    id_subactividad_producto              SERIAL PRIMARY KEY,
+    id_actividad_momento                  INTEGER NOT NULL,
+    id_dimension_emprendimiento           INT,
+    -- **NUEVA INTEGRACION** - Campos de producto de contrato
+    id_contrato                           INTEGER,                    -- **RELACION** - FK a contrato (OPCIONAL)
+    url_archivo_producto                  TEXT,                       -- URL archivo del producto
+    url_enlace_producto                   TEXT,                       -- URL enlace del producto
+    es_producto_contrato                  BOOLEAN DEFAULT FALSE,      -- Indica si es producto de contrato
+    
+    -- Campos originales
+    nombre_subactividad_producto          VARCHAR(255) NOT NULL,
+    tipo_subactividad_producto            VARCHAR(100),
+    fecha_subactividad_producto           DATE NOT NULL,
+    descripcion_subactividad_producto     TEXT,
+    hora_inicio_subactividad              TIME,
+    hora_finalizacion_subactividad        TIME,
+    tematica_subactividad                 VARCHAR(255),
+    modalidad_subactividad                MODALIDAD_ACTIVIDAD_ENUM DEFAULT 'Presencial',
+    materiales_subactividad               TEXT,
+    alimentacion_subactividad             BOOLEAN DEFAULT FALSE,
+    facilitador_subactividad              VARCHAR(255),
+    observaciones_subactividad            TEXT,
+    activo                                BOOLEAN DEFAULT TRUE,
+    fecha_creacion                        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_actualizacion                   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (id_actividad_momento) REFERENCES actividad_momento (id_actividad_momento) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_dimension_emprendimiento) REFERENCES dimension_emprendimiento (id_dimension_emprendimiento) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY (id_contrato) REFERENCES contrato (id_contrato) ON DELETE CASCADE ON UPDATE CASCADE,
+    
+    CONSTRAINT check_horas_subactividad CHECK (hora_finalizacion_subactividad IS NULL OR hora_finalizacion_subactividad >= hora_inicio_subactividad)
+);
+
+-- **NUEVA** - Tareas de contratos (vinculadas a productos y informes)
+CREATE TABLE tarea_contrato (
+    id_tarea_contrato               SERIAL PRIMARY KEY,
+    id_subactividad_producto        INTEGER NOT NULL,           -- **RELACION** - FK a subactividad/producto
+    id_informe_contrato             INTEGER,                    -- **RELACION** - FK a informe (opcional)
+    nombre_tarea                    VARCHAR(255) NOT NULL,
+    descripcion_tarea               TEXT,
+    url_tarea                       TEXT,
+    relacion_anexos                 TEXT,
+    aprobacion_anexos               BOOLEAN DEFAULT FALSE,
+    medios_verificacion             TEXT,
+    aprobacion_url                  BOOLEAN DEFAULT FALSE,
     activo                          BOOLEAN DEFAULT TRUE,
     fecha_creacion                  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    FOREIGN KEY (id_inventario) REFERENCES inventario (id_inventario) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_subactividad_producto) REFERENCES subactividad_producto (id_subactividad_producto) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_informe_contrato) REFERENCES informe_contrato (id_informe_contrato) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE relacion_actividad_persona (
+    id_relacion_actividad_persona         SERIAL PRIMARY KEY,
+    id_persona                            INTEGER NOT NULL,
+    id_subactividad_producto              INTEGER NOT NULL,
+    asistio                               BOOLEAN DEFAULT TRUE,
+    calificacion                          INT,
+    comentarios                           TEXT,
+    rol                                   VARCHAR(255),
+    
+    FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_subactividad_producto) REFERENCES subactividad_producto (id_subactividad_producto) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT check_calificacion CHECK (calificacion IS NULL OR (calificacion >= 1 AND calificacion <= 5)),
+    UNIQUE(id_persona, id_subactividad_producto)
 );
 
 -- ==============================================================
--- TABLA DE ASIGNACIÓN DE ROLES (MODIFICADA PARA INCLUIR NUEVAS ENTIDADES)
+-- TABLA DE ASIGNACIÓN DE ROLES (ACTUALIZADA)
 -- ==============================================================
 
 CREATE TABLE asignacion_rol_persona (
@@ -875,10 +925,12 @@ CREATE TABLE asignacion_rol_persona (
     id_emprendimiento                                   INTEGER,
     id_dimension_emprendimiento                         INTEGER,
     id_profesion                                        INTEGER,
-    -- **NUEVAS REFERENCIAS PARA TALENTO HUMANO**
+    -- **REFERENCIAS ACTUALIZADAS PARA TALENTO HUMANO**
     id_contrato                                         INTEGER,
     id_proveedor                                        INTEGER,
     id_inventario                                       INTEGER,
+    id_componente                                       INTEGER,
+    id_compra                                           INTEGER,
     activo                                              BOOLEAN NOT NULL DEFAULT TRUE,
 
     -- EXACTAMENTE UNA entidad con valor
@@ -903,6 +955,8 @@ CREATE TABLE asignacion_rol_persona (
         + (CASE WHEN id_contrato                                                IS NOT NULL THEN 1 ELSE 0 END)
         + (CASE WHEN id_proveedor                                               IS NOT NULL THEN 1 ELSE 0 END)
         + (CASE WHEN id_inventario                                              IS NOT NULL THEN 1 ELSE 0 END)
+        + (CASE WHEN id_componente                                              IS NOT NULL THEN 1 ELSE 0 END)
+        + (CASE WHEN id_compra                                                  IS NOT NULL THEN 1 ELSE 0 END)
         = 1
     ),
 
@@ -927,7 +981,9 @@ CREATE TABLE asignacion_rol_persona (
            (entidad = 'PROFESION'                AND id_profesion                               IS NOT NULL) OR
            (entidad = 'CONTRATO'                 AND id_contrato                                IS NOT NULL) OR
            (entidad = 'PROVEEDOR'                AND id_proveedor                               IS NOT NULL) OR
-           (entidad = 'INVENTARIO'               AND id_inventario                              IS NOT NULL)
+           (entidad = 'INVENTARIO'               AND id_inventario                              IS NOT NULL) OR
+           (entidad = 'COMPONENTE'               AND id_componente                              IS NOT NULL) OR
+           (entidad = 'COMPRA'                   AND id_compra                                  IS NOT NULL)
     ),
 
     -- Foreign Keys existentes
@@ -950,10 +1006,12 @@ CREATE TABLE asignacion_rol_persona (
     FOREIGN KEY (id_emprendimiento)                                 REFERENCES emprendimiento                                   (id_emprendimiento)                                 ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_dimension_emprendimiento)                       REFERENCES dimension_emprendimiento                         (id_dimension_emprendimiento)                       ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_profesion)                                      REFERENCES profesion                                        (id_profesion)                                      ON DELETE CASCADE ON UPDATE CASCADE,
-    -- **NUEVAS Foreign Keys para Talento Humano**
+    -- **Foreign Keys para Talento Humano**
     FOREIGN KEY (id_contrato)                                       REFERENCES contrato                                         (id_contrato)                                       ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_proveedor)                                      REFERENCES proveedor                                        (id_proveedor)                                      ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (id_inventario)                                     REFERENCES inventario                                       (id_inventario)                                     ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (id_inventario)                                     REFERENCES inventario                                       (id_inventario)                                     ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_componente)                                     REFERENCES componente                                       (id_componente)                                     ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (id_compra)                                         REFERENCES compra                                           (id_compra)                                         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- ==============================================================
@@ -976,7 +1034,7 @@ CREATE TABLE log_cambios (
 );
 
 -- ==============================================================
--- ÍNDICES PARA OPTIMIZACIÓN (INCLUYENDO NUEVAS TABLAS)
+-- ÍNDICES PARA OPTIMIZACIÓN 
 -- ==============================================================
 
 -- Índices existentes (sin cambios)
@@ -1022,7 +1080,7 @@ CREATE INDEX idx_rel_act_subactividad   ON relacion_actividad_persona(id_subacti
 
 CREATE INDEX idx_log_usuario ON log_cambios(usuario_accion);
 
--- **NUEVOS ÍNDICES PARA TALENTO HUMANO**
+-- **ÍNDICES PARA TALENTO HUMANO**
 CREATE INDEX idx_proveedor_persona ON proveedor(id_persona);
 CREATE INDEX idx_proveedor_empresa ON proveedor(id_empresa);
 CREATE INDEX idx_proveedor_tipo ON proveedor(tipo_proveedor);
@@ -1035,9 +1093,11 @@ CREATE INDEX idx_contrato_lider ON contrato(id_lider_contrato);
 
 CREATE INDEX idx_documento_contrato ON documento_contrato(id_contrato);
 CREATE INDEX idx_informe_contrato ON informe_contrato(id_contrato);
-CREATE INDEX idx_actividad_contrato ON actividad_contrato(id_contrato);
-CREATE INDEX idx_producto_actividad ON producto_contrato(id_actividad_contrato);
-CREATE INDEX idx_tarea_producto ON tarea_contrato(id_producto_contrato);
+
+-- **ÍNDICES DE INTEGRACIÓN**
+CREATE INDEX idx_actividad_contrato ON actividad_momento(id_contrato);
+CREATE INDEX idx_subactividad_contrato ON subactividad_producto(id_contrato);
+CREATE INDEX idx_tarea_subactividad ON tarea_contrato(id_subactividad_producto);
 CREATE INDEX idx_tarea_informe ON tarea_contrato(id_informe_contrato);
 
 CREATE INDEX idx_oportunidad_estado ON oportunidad(estado_oportunidad);
@@ -1048,70 +1108,16 @@ CREATE INDEX idx_oportunidad_proyecto ON oportunidad(id_proyecto_resultante);
 CREATE INDEX idx_acta_proyecto ON acta(id_proyecto);
 CREATE INDEX idx_acta_contrato ON acta(id_contrato);
 
+CREATE INDEX idx_componente_proyecto ON componente(id_proyecto);
+CREATE INDEX idx_compra_componente ON compra(id_componente);
+CREATE INDEX idx_compra_proveedor ON compra(id_proveedor);
+
+-- **ÍNDICES INVENTARIO SIMPLIFICADO**
 CREATE INDEX idx_inventario_responsable ON inventario(id_responsable_actual);
 CREATE INDEX idx_inventario_estado ON inventario(estado_inventario);
-CREATE INDEX idx_movimiento_inventario ON movimiento_inventario(id_inventario);
-CREATE INDEX idx_movimiento_tipo ON movimiento_inventario(tipo_movimiento);
-CREATE INDEX idx_movimiento_fechas ON movimiento_inventario(fecha_solicitud, fecha_movimiento);
-CREATE INDEX idx_seguimiento_inventario ON seguimiento_inventario(id_inventario);
-
--- ==============================================================
--- COMENTARIOS EN TABLAS
--- ==============================================================
-
--- Comentarios existentes (sin cambios)
-COMMENT ON TABLE pais IS 'Catálogo de países. Nivel superior de la jerarquía geográfica.';
-COMMENT ON TABLE departamento IS 'Departamentos/estados de un país. Depende de pais.';
-COMMENT ON TABLE region IS 'Regiones/provincias dentro de un departamento. Depende de departamento.';
-COMMENT ON TABLE ciudad IS 'Ciudades/municipios dentro de una región. Depende de region.';
-COMMENT ON TABLE comuna IS 'Comunas/localidades dentro de una ciudad. Depende de ciudad.';
-COMMENT ON TABLE barrio IS 'Barrios/sectores dentro de una comuna. Depende de comuna.';
-COMMENT ON TABLE direccion IS 'Direcciones físicas con georreferenciación (lat/long). Depende de barrio.';
-
-COMMENT ON TABLE persona IS 'Personas del sistema: identificación, contacto y ubicación (soft delete).';
-COMMENT ON TABLE empresa IS 'Empresas e instituciones (incluye educativas). Información corporativa y contacto.';
-COMMENT ON TABLE tipo_rol IS 'Catálogo de tipos de rol (ámbito/área) aplicables a distintas entidades.';
-
-COMMENT ON TABLE sede_campus IS 'Sedes/campus de una empresa o institución, con dirección física.';
-COMMENT ON TABLE unidad_administrativa IS 'Unidades administrativas pertenecientes a una sede/campus.';
-COMMENT ON TABLE subunidad_administrativa IS 'Subunidades administrativas dependientes de una unidad administrativa.';
-COMMENT ON TABLE unidad_academica IS 'Unidades académicas (Facultad/Escuela/Instituto/Corporación) por sede.';
-COMMENT ON TABLE programa_academico IS 'Programas académicos (SNIES/nivel/área) vinculados a una unidad académica.';
-COMMENT ON TABLE grupo_investigacion IS 'Grupos de investigación asociados a una unidad académica.';
-
-COMMENT ON TABLE profesion IS 'Catálogo de profesiones/títulos con área y código ocupacional.';
-COMMENT ON TABLE red_social_persona_empresa IS 'Perfiles de redes sociales asociados a una persona o a una empresa (exclusivo).';
-
-COMMENT ON TABLE emprendimiento IS 'Ficha del emprendimiento asociada a una empresa: estado, sector, métricas y formalización.';
-COMMENT ON TABLE emprendedor IS 'Atributos socio-demográficos del emprendedor enlazado a una persona.';
-COMMENT ON TABLE programa IS 'Programas (no académicos) de gestión: estado, prioridad, etapa, cronograma y presupuesto.';
-COMMENT ON TABLE proyecto IS 'Proyectos asociados (opcionalmente) a un programa: estado, fechas, contrato y valor.';
-
-COMMENT ON TABLE ag_o_pe IS 'Catálogo de Asuntos de Gestión o Procesos Ejecutables (AG/PE) y su metadata.';
-COMMENT ON TABLE asunto_de_trabajo_tipo_emprendimiento IS 'Asuntos de trabajo por tipo de emprendimiento, vinculados a AG/PE.';
-COMMENT ON TABLE mapa_conocimiento_proceso IS 'Mapa/proceso con planificación, esfuerzo y presupuesto sobre un asunto de trabajo.';
-COMMENT ON TABLE etapa_asunto_trabajo_proyecto_actividad IS 'Etapas que conectan asuntos de trabajo y proyectos (workflow de alto nivel).';
-COMMENT ON TABLE dimension_emprendimiento IS 'Dimensiones/ámbitos de trabajo del emprendimiento (catálogo).';
-COMMENT ON TABLE actividad_momento IS 'Actividades programadas dentro de una etapa (fecha, modalidad, tipo, observaciones).';
-COMMENT ON TABLE subactividad_producto IS 'Subactividades/productos derivados de una actividad y su dimensión asociada.';
-COMMENT ON TABLE relacion_actividad_persona IS 'Asistencia/participación de personas en subactividades (única por persona-subactividad).';
-
--- **NUEVOS COMENTARIOS PARA TALENTO HUMANO**
-COMMENT ON TABLE proveedor IS '**NUEVO** - Proveedores del sistema: pueden ser personas naturales, jurídicas o mixto. Relaciona con persona y/o empresa.';
-COMMENT ON TABLE contrato IS '**NUEVO** - Contratos del sistema: vinculados a proyectos y proveedores. Incluye toda la información contractual y financiera.';
-COMMENT ON TABLE documento_contrato IS '**NUEVO** - Documentos requeridos por contrato (hoja de vida, certificados, autorizaciones, etc.).';
-COMMENT ON TABLE informe_contrato IS '**NUEVO** - Informes periódicos de contratos con aprobaciones y seguimiento.';
-COMMENT ON TABLE actividad_contrato IS '**NUEVO** - Actividades planificadas dentro de un contrato (estructura jerárquica).';
-COMMENT ON TABLE producto_contrato IS '**NUEVO** - Productos/entregables específicos de cada actividad de contrato.';
-COMMENT ON TABLE tarea_contrato IS '**NUEVO** - Tareas detalladas asociadas a productos, con seguimiento y verificación.';
-COMMENT ON TABLE oportunidad IS '**NUEVO** - Gestión de oportunidades de financiación: análisis, seguimiento y conversión a proyectos.';
-COMMENT ON TABLE acta IS '**NUEVO** - Actas relacionadas con proyectos y contratos (inicio, seguimiento, cierre).';
-COMMENT ON TABLE inventario IS '**NUEVO** - Catálogo principal de bienes e inventario con responsables y ubicaciones.';
-COMMENT ON TABLE movimiento_inventario IS '**NUEVO** - Historial de movimientos de inventario: traslados, asignaciones, devoluciones, etc.';
-COMMENT ON TABLE seguimiento_inventario IS '**NUEVO** - Seguimiento específico de inventario con incidencias y estados.';
-
-COMMENT ON TABLE asignacion_rol_persona IS 'Asignación polimórfica de roles de personas sobre múltiples entidades (**ACTUALIZADA** - incluye CONTRATO, PROVEEDOR, INVENTARIO).';
-COMMENT ON TABLE log_cambios IS 'Bitácora de auditoría por tabla/operación con datos antes/después, usuario, IP y referencia a persona.';
+CREATE INDEX idx_seguimiento_inventario_item ON seguimiento_inventario(id_inventario);
+CREATE INDEX idx_seguimiento_tipo ON seguimiento_inventario(tipo_seguimiento);
+CREATE INDEX idx_seguimiento_fechas ON seguimiento_inventario(fecha_solicitud, fecha_movimiento);
 
 -- ==============================================================
 -- PERMISOS
@@ -1122,81 +1128,53 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;
 COMMIT;
 
 -- ==============================================================
--- FIN DEL MODELO EXTENDIDO DE BASE DE DATOS
+-- FIN DEL MODELO INTEGRADO DE BASE DE DATOS
 -- ==============================================================
 
 DO $$
 DECLARE
-    v_schema          text := current_schema();
-    v_tablas          int;
-    v_enums           int;
-    v_indices         int;
-    v_constraints     int;
-    v_fks             int;
-    v_funcs           int;
-    v_views           int;
-    v_tablas_nuevas   int := 11;  -- Número de tablas nuevas agregadas
+    v_schema                text := current_schema();
+    v_tablas                int;
+    v_enums                 int;
+    v_indices               int;
+    v_constraints           int;
+    v_fks                   int;
+    v_funcs                 int;
+    v_views                 int;
+    v_tablas_integradas     int := 2;   -- Tablas que se integraron
+    v_tablas_eliminadas     int := 3;   -- Tablas que se eliminaron por integración
+    v_tablas_nuevas         int := 4;   -- Componente, compra + otras
 BEGIN
-    -- Conteo de tablas base
-    SELECT count(*) INTO v_tablas
-    FROM information_schema.tables
-    WHERE table_schema = v_schema
-      AND table_type = 'BASE TABLE';
-
-    -- Conteo de tipos ENUM del esquema
-    SELECT count(*) INTO v_enums
-    FROM pg_type t
-    JOIN pg_namespace n ON n.oid = t.typnamespace
-    WHERE n.nspname = v_schema
-      AND t.typtype = 'e';
-
-    -- Conteo de índices (incluye PK/UK)
-    SELECT count(*) INTO v_indices
-    FROM pg_indexes
-    WHERE schemaname = v_schema;
-
-    -- Conteo de constraints totales y FKs
-    SELECT count(*) INTO v_constraints
-    FROM information_schema.table_constraints
-    WHERE constraint_schema = v_schema;
-
-    SELECT count(*) INTO v_fks
-    FROM information_schema.table_constraints
-    WHERE constraint_schema = v_schema
-      AND constraint_type = 'FOREIGN KEY';
-
-    -- Funciones / Procedimientos del esquema
-    SELECT count(*) INTO v_funcs
-    FROM information_schema.routines
-    WHERE routine_schema = v_schema
-      AND routine_type IN ('FUNCTION','PROCEDURE');
-
-    -- Vistas del esquema
-    SELECT count(*) INTO v_views
-    FROM information_schema.views
-    WHERE table_schema = v_schema;
+    -- Conteos
+    SELECT count(*) INTO v_tablas FROM information_schema.tables WHERE table_schema = v_schema AND table_type = 'BASE TABLE';
+    SELECT count(*) INTO v_enums FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = v_schema AND t.typtype = 'e';
+    SELECT count(*) INTO v_indices FROM pg_indexes WHERE schemaname = v_schema;
+    SELECT count(*) INTO v_constraints FROM information_schema.table_constraints WHERE constraint_schema = v_schema;
+    SELECT count(*) INTO v_fks FROM information_schema.table_constraints WHERE constraint_schema = v_schema AND constraint_type = 'FOREIGN KEY';
+    SELECT count(*) INTO v_funcs FROM information_schema.routines WHERE routine_schema = v_schema AND routine_type IN ('FUNCTION','PROCEDURE');
+    SELECT count(*) INTO v_views FROM information_schema.views WHERE table_schema = v_schema;
 
     -- Mensaje final
     RAISE NOTICE E'\n';
     RAISE NOTICE '╔═══════════════════════════════════════════════════════════════╗';
-    RAISE NOTICE '║   BD EMPRENDIMIENTO + TALENTO HUMANO INSTALADA (Esquema: %)    ║', v_schema;
+    RAISE NOTICE '║   BD EMPRENDIMIENTO + TALENTO HUMANO INTEGRADA (Schema: %)     ║', v_schema;
     RAISE NOTICE '╠═══════════════════════════════════════════════════════════════╣';
     RAISE NOTICE '║  ✅ Tablas TOTALES: %                                         ║', v_tablas;
-    RAISE NOTICE '║     └─ Tablas NUEVAS añadidas: %                             ║', v_tablas_nuevas;
+    RAISE NOTICE '║     └─ Tablas INTEGRADAS: %                                   ║', v_tablas_integradas;
+    RAISE NOTICE '║     └─ Tablas NUEVAS: %                                       ║', v_tablas_nuevas;
+    RAISE NOTICE '║     └─ Tablas ELIMINADAS: %                                   ║', v_tablas_eliminadas;
     RAISE NOTICE '║  ✅ Tipos ENUM: %                                             ║', v_enums;
-    RAISE NOTICE '║  ✅ Índices (incluye PK/UK): %                                ║', v_indices;
-    RAISE NOTICE '║  ✅ Constraints totales: %                                    ║', v_constraints;
+    RAISE NOTICE '║  ✅ Índices: %                                                ║', v_indices;
+    RAISE NOTICE '║  ✅ Constraints: %                                            ║', v_constraints;
     RAISE NOTICE '║     └─ Foreign Keys: %                                        ║', v_fks;
-    RAISE NOTICE '║  ✅ Vistas: %                                                 ║', v_views;
-    RAISE NOTICE '║  ✅ Funciones/Procedimientos: %                               ║', v_funcs;
     RAISE NOTICE '╠═══════════════════════════════════════════════════════════════╣';
-    RAISE NOTICE '║                     NUEVAS FUNCIONALIDADES                    ║';
-    RAISE NOTICE '║  🎯 Gestión completa de proveedores                          ║';
-    RAISE NOTICE '║  📋 Contratos con seguimiento completo                       ║';  
-    RAISE NOTICE '║  📊 Informes y tareas de contratos                           ║';
-    RAISE NOTICE '║  💡 Gestión de oportunidades integrada                       ║';
-    RAISE NOTICE '║  📦 Sistema completo de inventario                           ║';
-    RAISE NOTICE '║  🔄 Movimientos y seguimiento de inventario                  ║';
-    RAISE NOTICE '║  📄 Actas y documentación                                    ║';
+    RAISE NOTICE '║                     🔄 INTEGRACIONES REALIZADAS                ║';
+    RAISE NOTICE '║  ✅ actividad_contrato → actividad_momento (INTEGRADA)       ║';
+    RAISE NOTICE '║  ✅ producto_contrato → subactividad_producto (INTEGRADA)    ║';
+    RAISE NOTICE '║  ✅ movimiento_inventario → seguimiento_inventario (UNIF.)   ║';
+    RAISE NOTICE '║  ✅ Inventario simplificado a 2 tablas                       ║';
+    RAISE NOTICE '║  ➕ Tabla componente añadida (según imagen)                  ║';
+    RAISE NOTICE '║  ➕ Tabla compra añadida (según imagen)                      ║';
+    RAISE NOTICE '║  🔗 Relaciones cruzadas entre todos los módulos              ║';
     RAISE NOTICE '╚═══════════════════════════════════════════════════════════════╝';
 END $$;
