@@ -128,6 +128,39 @@ CREATE TABLE direccion (
     FOREIGN KEY (id_barrio) REFERENCES barrio (id_barrio) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+
+
+-- ==============================================================
+-- JERARQUÍA Actividades económicas
+-- Estructura: Macrosector > Subsector > Actividad económica
+-- ==============================================================
+
+CREATE TABLE macrosector (
+    id_macrosector              SERIAL PRIMARY KEY,                    -- ID único del macrosector
+    nombre_macrosector          VARCHAR(100) NOT NULL UNIQUE,          -- Nombre del macrosector
+    seccion_macrosector         VARCHAR(20)                            -- Clasificación de macrosectores
+);
+
+CREATE TABLE subsector (
+    id_subsector               SERIAL PRIMARY KEY,                     -- ID único del subsector
+    nombre_subsector           VARCHAR(300) NOT NULL,                  -- Nombre del subsector
+    grupo_subsector            VARCHAR(10),                            -- Grupo al que pertenece el subsector
+    id_macrosector             INTEGER NOT NULL,                       -- FK al macrosector
+    
+    FOREIGN KEY (id_macrosector) REFERENCES macrosector (id_macrosector) ON DELETE RESTRICT ON UPDATE CASCADE,
+    UNIQUE(nombre_subsector, id_macrosector)  -- No puede haber subsectores duplicados en un macrosector
+);
+
+CREATE TABLE actividad_economica (
+    id_actividad_economica              SERIAL PRIMARY KEY,             -- ID único de la actividad económica
+    nombre_actividad_economica          VARCHAR(300) NOT NULL,          -- Nombre de la actividad económica
+    clase_actividad_economica           VARCHAR(10),                    -- Clase a la que pertenece la actividad económica
+    id_subsector                        INTEGER NOT NULL,               -- FK al subsector
+    
+    FOREIGN KEY (id_subsector) REFERENCES subsector (id_subsector) ON DELETE RESTRICT ON UPDATE CASCADE,
+    UNIQUE(nombre_actividad_economica, id_subsector)  -- No puede haber actividades económicas duplicadas en un subsector
+);
+
 -- ==============================================================
 -- PERSONAS Y EMPRESAS
 -- Entidades principales del sistema
