@@ -15,7 +15,8 @@ CREATE TYPE TIPO_DOCUMENTO_PERSONA_ENUM AS ENUM ('Cédula de Ciudadanía (CC)', 
 CREATE TYPE ESTRATO_SOCIOECONOMICO_ENUM AS ENUM ('Estrato 1 (Bajo-bajo)', 'Estrato 2 (Bajo)', 'Estrato 3 (Medio-bajo)', 'Estrato 4 (Medio)', 'Estrato 5 (Medio-alto)', 'Estrato 6 (Alto)');
 CREATE TYPE ETNIA_EMPRENDEDOR_ENUM AS ENUM ('Blanco', 'Mestizo', 'Afrocolombiano', 'Indígena', 'Raizal', 'Palenquero', 'Rom o Gitano', 'Prefiero no decir', 'Ninguno de los anteriores');
 CREATE TYPE ESTADO_CIVIL_EMPRENDEDOR_ENUM AS ENUM ('Soltero', 'Casado','Unión libre', 'Separado', 'Divorciado', 'Viudo', 'Otro');
-CREATE TYPE CATEGORIA_EMPRESA_ENUM AS ENUM ('Microempresa', 'Pequeña empresa', 'Mediana empresa', 'Gran empresa');
+CREATE TYPE TAMAÑO_EMPRESA_ENUM AS ENUM ('Emprendimiento en idea o estructuración', 'Micro', 'Pequeña', 'Mediana', 'Grande');
+CREATE TYPE FACTOR_DIFERENCIADOR_EMPRESA_ENUM AS ENUM ('Tiempo de respuesta al cliente', 'Precio más bajo','Novedad para el cliente', 'No posee');
 CREATE TYPE ZONA_EMPRESA_ENUM AS ENUM ('Urbana', 'Rural','Periurbana');
 CREATE TYPE TIPO_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura', 'Institución educativa');
 CREATE TYPE MACROSECTOR_EMPRESA_ENUM AS ENUM ('Tecnología', 'Comercio', 'Servicios', 'Industria', 'Agricultura');
@@ -170,7 +171,7 @@ CREATE TABLE empresa (
     id_empresa                        SERIAL PRIMARY KEY,                    -- ID único de la empresa
     nombre_empresa                    VARCHAR(100) NOT NULL UNIQUE,         -- Razón social (única)
     nit_empresa                       VARCHAR(20) UNIQUE,                   -- NIT o equivalente (único)
-    categoria_empresa                 CATEGORIA_EMPRESA_ENUM NOT NULL,      -- Tamaño según empleados
+    tamaño_empresa                 TAMAÑO_EMPRESA_ENUM NOT NULL,      -- Tamaño según empleados
     zona_empresa                      ZONA_EMPRESA_ENUM NOT NULL,           -- Ubicación urbana/rural
     tipo_empresa                      TIPO_EMPRESA_ENUM NOT NULL,           -- Sector económico
     macrosector_empresa               MACROSECTOR_EMPRESA_ENUM NOT NULL,    -- Sector principal
