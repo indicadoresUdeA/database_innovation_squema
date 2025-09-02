@@ -485,8 +485,6 @@ CREATE TABLE proveedor (
     calificacion_proveedor          DECIMAL(3,2),              -- Calificación del 1 al 5
     observaciones_proveedor         TEXT,
     activo                          BOOLEAN DEFAULT TRUE,
-    fecha_creacion                  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion             TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     FOREIGN KEY (id_persona) REFERENCES persona (id_persona) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (id_empresa) REFERENCES empresa (id_empresa) ON DELETE CASCADE ON UPDATE CASCADE,
