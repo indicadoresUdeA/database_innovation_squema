@@ -128,8 +128,6 @@ CREATE TABLE direccion (
     FOREIGN KEY (id_barrio) REFERENCES barrio (id_barrio) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
-
-
 -- ==============================================================
 -- JERARQUÍA Actividades económicas
 -- Estructura: Macrosector > Subsector > Actividad económica
@@ -173,7 +171,7 @@ CREATE TABLE persona (
     primer_apellido_persona           TEXT,                                     -- ✓ Nombres completos 
     segundo_apellido_persona          TEXT,                                     -- ✓ Nombres completos 
     tipo_documento_persona            TIPO_DOCUMENTO_PERSONA_ENUM,              -- ✓ Tipo de documento de identidad 
-    numero_documento_persona          TEXT UNIQUE,                              -- ✓ Número del documento (único) 
+    numero_documento_persona          TEXT NOT NULL UNIQUE,                     -- ✓ Número del documento (único) 
     fecha_nacimiento_persona          DATE,                                     -- ✓ Fecha de nacimiento 
     sexo_biologico                    SEXO_ENUM,                                -- ✓ Sexo biológico al nacer 
     genero                            GENERO_ENUM,                              -- ✓ Identidad de género 
@@ -209,16 +207,16 @@ CREATE TABLE persona (
 
 CREATE TABLE empresa (
     id_empresa                        SERIAL PRIMARY KEY,                    -- ID único de la empresa
-    nombre_empresa                    VARCHAR(100) NOT NULL UNIQUE,         -- Razón social (única)
-    nit_empresa                       VARCHAR(20) UNIQUE,                   -- NIT o equivalente (único)
+    nombre_empresa                    TEXT NOT NULL UNIQUE,         -- Razón social (única)
+    nit_empresa                       TEXT UNIQUE,                   -- NIT o equivalente (único)
     tamano_empresa                    TAMANO_EMPRESA_ENUM NOT NULL,         -- Tamaño según empleados
     zona_empresa                      ZONA_EMPRESA_ENUM NOT NULL,           -- Ubicación urbana/rural
     tipo_empresa                      TIPO_EMPRESA_ENUM NOT NULL,           -- Sector económico
     macrosector_empresa               MACROSECTOR_EMPRESA_ENUM NOT NULL,    -- Sector principal
     subsector_empresa                 SUBSECTOR_EMPRESA_ENUM NOT NULL,      -- Subsector específico
     naturaleza_juridica               NATURALEZA_JURIDICA_ENUM,             -- SAS, LTDA, SA, etc.
-    telefono_empresa                  VARCHAR(20),                           -- Teléfono principal
-    correo_empresa                    VARCHAR(100) UNIQUE NOT NULL,         -- Email corporativo (único)
+    telefono_empresa                  TEXT,                           -- Teléfono principal
+    correo_empresa                    TEXT UNIQUE NOT NULL,         -- Email corporativo (único)
     sitio_web_url                     TEXT,                                 -- URL del sitio web
     logo_empresa_url                  TEXT,                                  -- URL al logo
     descripcion_empresa               TEXT,                                  -- Descripción de la empresa
@@ -226,9 +224,9 @@ CREATE TABLE empresa (
     fecha_fundacion                   DATE,                                  -- Fecha de fundación
     numero_empleados                  INT,                                   -- Cantidad de empleados
     es_emprendimiento                 BOOLEAN NOT NULL,                     -- tag de emprendimiento
-    activo                           BOOLEAN DEFAULT TRUE,                  -- Soft delete
-    fecha_creacion                   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Fecha de registro
-    fecha_actualizacion              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Última actualización
+    activo                            BOOLEAN DEFAULT TRUE,                  -- Soft delete
+    fecha_creacion                    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Fecha de registro
+    fecha_actualizacion               TIMESTAMP DEFAULT CURRENT_TIMESTAMP,   -- Última actualización
     
     CONSTRAINT check_fecha_fundacion CHECK (fecha_fundacion <= CURRENT_DATE),  -- No puede fundarse en el futuro
     CONSTRAINT check_numero_empleados CHECK (numero_empleados >= 0)  -- No puede tener empleados negativos
