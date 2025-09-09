@@ -45,7 +45,7 @@ CREATE TYPE CATEGORIA_COLCIENCIAS_ENUM AS ENUM ('A1','A','B','C','Reconocido');
 CREATE TYPE AREA_PROFESION_ENUM AS ENUM ('Agronomía, veterinaria y afines','Bellas artes','Ciencias de la educación','Ciencias de la salud','Ciencias sociales y humanas','Economía, administración, contaduría y afines','Ingeniería, arquitectura, urbanismo y afines','Matemáticas y ciencias naturales', 'Agricola', 'Servicios', 'Otro');
 CREATE TYPE TIPO_CUENTA_RED_SOCIAL_ENUM AS ENUM ('Personal','Corporativa','Institucional','Marca','Proyecto','Comunidad');
 CREATE TYPE TIPO_SUBACTIVIDAD_PRODUCTO_ENUM AS ENUM ('Taller','Mentoría','Asesoría','Charla','Capacitación','Networking','Demostración','Diagnóstico','Entrega','Otro');
-
+CREATE TYPE tipo_de_cuenta AS ENUM ('basica','premium','administrador');
 
 
 -- ==============================================================
@@ -240,6 +240,16 @@ CREATE TABLE tipo_rol (
     activo                   BOOLEAN DEFAULT TRUE NOT NULL 
 );
 
+
+CREATE TABLE cuenta (
+    id_cuenta                   SERIAL PRIMARY KEY,
+    nombre_usuario              TEXT NOT NULL,
+    contrasena_hash             TEXT NOT NULL,
+    tipo_cuenta tipo_de_cuenta  NOT NULL DEFAULT 'basica',
+    fecha_creacion              TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    ultimo_acceso               TIMESTAMP WITH TIME ZONE,
+    activa                      BOOLEAN DEFAULT TRUE
+);
 -- Tabla para sede o campus (con dirección)
 CREATE TABLE sede_campus (
     id_sede_campus         SERIAL PRIMARY KEY,                    -- ID único de la sede
